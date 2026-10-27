@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import PixelButton from './PixelButton.vue';
+import PixelButton from '@/components/ui/PixelButton.vue';
 
 describe('PixelButton', () => {
   it('renders slot content with the primary style by default', () => {
