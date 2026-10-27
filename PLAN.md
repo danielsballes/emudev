@@ -12,8 +12,9 @@ Cada fase es uno o varios PRs independientes. No se mezclan engine, UI y conteni
 
 - [x] **Fase 1: Bootstrap.** Vite + Vue, Tailwind, i18n, ESLint/Prettier, Vitest,
       husky/commitlint, plantillas, CI/CD con semantic-release y GitHub Pages.
-- [ ] **Fase 2: Engine.** Registry de módulos, storage versionado, runner en Web Worker,
-      mini-lib de tests, progresión (XP, niveles, insignias, desbloqueos).
+- [x] **Fase 2: Engine.** Registry de módulos, storage versionado, runner en Web Worker,
+      mini-lib de tests, progresión (XP, niveles, insignias, desbloqueos), plugin `createEngine`
+      y store de Pinia `useSaveStore`.
 - [ ] **Fase 3: Shell RPG.** Creación de personaje, HUD, mapa del mundo, mapa del módulo, vista
       de lección (contenido + editor CodeMirror + resultados de tests), perfil, exportar/importar
       partida.

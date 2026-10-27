@@ -71,7 +71,19 @@ src/
 └─ modules/<id>/  # un módulo por sistema emulado
 ```
 
-Estado actual: solo existe el bootstrap (app vacía, router, i18n, tooling). Ver fases en PLAN.md.
+Estado actual: bootstrap + engine. Aún no hay UI de juego ni módulos. Ver fases en PLAN.md.
+
+Piezas del engine:
+
+- `createEngine()` (`src/engine/plugin.js`): plugin de Vue que provee `{ registry, repository,
+runner }`; `useEngine()` los obtiene. En tests se inyectan fakes.
+- `useSaveStore()` (`src/stores/save.js`): partida del jugador. El save se reemplaza de forma
+  inmutable (`shallowRef`) en cada cambio y se persiste vía el repositorio.
+- Runner: protocolo `{ type: 'run', token, studentSource, testsSource }` → `{ type: 'result',
+token, outcome }`. Estados: `passed`, `failed`, `error` (fase `student` | `tests` | `worker`),
+  `timeout`. Los errores de aserción viajan como datos (`matcher`, `expected`, `actual`) para que
+  la UI los explique en el idioma del alumno.
+- Tests de ejercicio: `export default [{ name, run: ({ student, expect }) => …, hint? }]`.
 
 ## Cómo añadir un módulo
 
