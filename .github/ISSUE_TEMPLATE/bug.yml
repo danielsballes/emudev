@@ -1,0 +1,30 @@
+name: Error
+description: Algo no funciona como debería
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: ¿Qué pasó?
+      description: Describe el error y qué esperabas que ocurriera.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: |
+        1. Ir a...
+        2. Pulsar...
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Módulo / lección
+      placeholder: chip8 / 07-display
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador y sistema
+      placeholder: Chrome 140 / Windows 11

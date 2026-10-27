@@ -1,0 +1,11 @@
+{
+  "app": {
+    "name": "EmuDev Academy",
+    "tagline": "Aprende a construir emuladores, desde CHIP-8 hasta consolas modernas.",
+    "version": "Versión {version}"
+  },
+  "home": {
+    "start": "Comenzar aventura",
+    "comingSoon": "El mapa del mundo está en construcción."
+  }
+}

@@ -1,0 +1,27 @@
+name: Lección o módulo
+description: Proponer o corregir contenido educativo
+labels: [content]
+body:
+  - type: input
+    id: module
+    attributes:
+      label: Módulo
+      placeholder: chip8
+    validations:
+      required: true
+  - type: input
+    id: lesson
+    attributes:
+      label: Lección (si aplica)
+      placeholder: 05-decode
+  - type: textarea
+    id: details
+    attributes:
+      label: Qué hay que añadir o corregir
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: Referencias
+      description: Documentación técnica, specs, test ROMs...
