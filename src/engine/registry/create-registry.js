@@ -69,18 +69,24 @@ export function createRegistry(manifests) {
 
   const modules = deepFreeze(
     manifests
-      .map((manifest) => ({ requires: [], badges: [], ...manifest }))
+      .map((manifest) => ({
+        ...manifest,
+        requires: manifest.requires ?? [],
+        badges: manifest.badges ?? [],
+      }))
       .toSorted((left, right) => left.order - right.order),
   );
   const lessonsByModule = new Map(
     modules.map((module) => [
       module.id,
-      module.chapters.flatMap((chapter) =>
-        chapter.lessons.map((lesson) => ({
-          ...lesson,
-          moduleId: module.id,
-          chapterId: chapter.id,
-        })),
+      deepFreeze(
+        module.chapters.flatMap((chapter) =>
+          chapter.lessons.map((lesson) => ({
+            ...lesson,
+            moduleId: module.id,
+            chapterId: chapter.id,
+          })),
+        ),
       ),
     ]),
   );

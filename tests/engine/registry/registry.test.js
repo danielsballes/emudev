@@ -132,6 +132,14 @@ describe('createRegistry', () => {
 
     expect(Object.isFrozen(registry.modules)).toBe(true);
     expect(Object.isFrozen(registry.getModule('zero').chapters[0].lessons[0])).toBe(true);
+    expect(Object.isFrozen(registry.getLessons('zero'))).toBe(true);
+    expect(Object.isFrozen(registry.getLesson('zero', 'only-lesson'))).toBe(true);
+  });
+
+  it('defaults optional fields even when they are explicitly undefined', () => {
+    const registry = createRegistry([{ ...zero, requires: undefined, badges: undefined }]);
+
+    expect(registry.getModule('zero')).toMatchObject({ requires: [], badges: [] });
   });
 
   it('flattens lessons in order with their module and chapter', () => {

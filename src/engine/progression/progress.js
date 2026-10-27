@@ -42,8 +42,8 @@ export function isModuleUnlocked(save, registry, moduleId) {
 }
 
 /**
- * Lessons unlock in order: the first lesson of an unlocked module, any completed lesson, and the
- * lesson right after a completed one.
+ * Lessons unlock in order: the first lesson of an unlocked module, any completed lesson (even if
+ * new lessons were later inserted before it), and the lesson right after a completed one.
  * @param {object} save
  * @param {object} registry
  * @param {{ moduleId: string, lessonId: string }} target
@@ -54,7 +54,13 @@ export function isLessonUnlocked(save, registry, { moduleId, lessonId }) {
   }
   const lessons = registry.getLessons(moduleId);
   const index = lessons.findIndex((lesson) => lesson.id === lessonId);
-  return index === 0 || (index > 0 && isLessonCompleted(save, moduleId, lessons[index - 1].id));
+  const isKnownLesson = index !== -1;
+  return (
+    isKnownLesson &&
+    (index === 0 ||
+      isLessonCompleted(save, moduleId, lessonId) ||
+      isLessonCompleted(save, moduleId, lessons[index - 1].id))
+  );
 }
 
 /**

@@ -43,4 +43,22 @@ describe('serializeError', () => {
   it('serializes non-error throwables', () => {
     expect(serializeError('oops')).toEqual({ name: 'Error', message: '"oops"' });
   });
+
+  it('turns non-string error fields into text', () => {
+    const error = new Error('placeholder');
+    error.message = { code: 0x50 };
+
+    expect(serializeError(error)).toEqual({ name: 'Error', message: '{ code: 80 (0x50) }' });
+  });
+
+  it('never throws on hostile errors', () => {
+    const error = new Error('placeholder');
+    Object.defineProperty(error, 'name', {
+      get() {
+        throw new Error('getter exploded');
+      },
+    });
+
+    expect(serializeError(error)).toEqual({ name: 'Error', message: '[unprintable error]' });
+  });
 });

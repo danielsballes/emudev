@@ -35,9 +35,11 @@ export const useSaveStore = defineStore('save', () => {
   const { registry, repository } = useEngine();
   const save = shallowRef(repository.load());
 
+  // Write first: if storage fails (e.g. quota exceeded) the in-memory state stays unchanged and
+  // the action can be retried.
   function persist(next) {
-    save.value = next;
     repository.save(next);
+    save.value = next;
   }
 
   const player = computed(() => save.value.player);

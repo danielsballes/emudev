@@ -8,8 +8,11 @@ import { AssertionError, expect } from './expect.js';
  * @property {string} [hint] Shown to the student when the test fails.
  */
 
+const asText = (value) => (typeof value === 'string' ? value : describeValue(value));
+
 /**
- * Converts any thrown value into plain data that can cross `postMessage`.
+ * Converts any thrown value into plain strings that can cross `postMessage`.
+ * Never throws, even for errors with throwing getters or non-string fields.
  * @param {unknown} error
  */
 export function serializeError(error) {
@@ -17,9 +20,13 @@ export function serializeError(error) {
     const { name, message, matcher, expected, actual, negated } = error;
     return { name, message, matcher, expected, actual, negated };
   }
-  return error instanceof Error
-    ? { name: error.name, message: error.message }
-    : { name: 'Error', message: describeValue(error) };
+  try {
+    return error instanceof Error
+      ? { name: asText(error.name), message: asText(error.message) }
+      : { name: 'Error', message: describeValue(error) };
+  } catch {
+    return { name: 'Error', message: '[unprintable error]' };
+  }
 }
 
 function assertValidTests(tests) {

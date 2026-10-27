@@ -11,7 +11,7 @@ export class SaveFormatError extends Error {
 }
 
 /**
- * Checks that a value is a save envelope: `{ version: positive integer, data: object }`.
+ * Checks that a value is a save envelope: `{ version: positive integer, data: plain object }`.
  * @param {unknown} envelope
  */
 export function assertEnvelope(envelope) {
@@ -21,7 +21,8 @@ export function assertEnvelope(envelope) {
     Number.isSafeInteger(envelope.version) &&
     envelope.version > 0 &&
     typeof envelope.data === 'object' &&
-    envelope.data !== null;
+    envelope.data !== null &&
+    !Array.isArray(envelope.data);
   if (!isValid) {
     throw new SaveFormatError('invalid-format', 'Save must be { version, data }');
   }

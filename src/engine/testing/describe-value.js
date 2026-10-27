@@ -1,6 +1,7 @@
 const MAX_ITEMS = 16;
 const MAX_DEPTH = 2;
 const MAX_STRING_LENGTH = 200;
+const UNPRINTABLE = '[unprintable value]';
 
 /**
  * Formats an integer in decimal and hexadecimal, the way emulator developers read numbers.
@@ -17,16 +18,32 @@ function truncate(text) {
   return text.length > MAX_STRING_LENGTH ? `${text.slice(0, MAX_STRING_LENGTH)}…` : text;
 }
 
-function limitItems(items) {
-  const hidden = items.length - MAX_ITEMS;
-  return hidden > 0 ? [...items.slice(0, MAX_ITEMS), `… (+${hidden})`] : items;
+/**
+ * Appends the "… (+n)" suffix when only part of a collection is shown.
+ * Collections are cut to `MAX_ITEMS` before formatting, so huge buffers stay cheap to describe.
+ */
+function withHiddenCount(shown, total) {
+  const hidden = total - shown.length;
+  return hidden > 0 ? [...shown, `… (+${hidden})`] : shown;
+}
+
+function describeList(items, total, depth) {
+  return withHiddenCount(
+    Array.from(items, (item) => describeAt(item, depth + 1)),
+    total,
+  );
 }
 
 function describeEntries(value, depth) {
-  const entries = Object.entries(value).map(
-    ([key, item]) => `${key}: ${describeAt(item, depth + 1)}`,
-  );
-  return entries.length === 0 ? '{}' : `{ ${limitItems(entries).join(', ')} }`;
+  const keys = Object.keys(value);
+  const shown = keys
+    .slice(0, MAX_ITEMS)
+    .map((key) => `${key}: ${describeAt(value[key], depth + 1)}`);
+  return keys.length === 0 ? '{}' : `{ ${withHiddenCount(shown, keys.length).join(', ')} }`;
+}
+
+function describeDate(value) {
+  return Number.isNaN(value.getTime()) ? 'Date(Invalid)' : `Date(${value.toISOString()})`;
 }
 
 function describeObject(value, depth) {
@@ -34,17 +51,17 @@ function describeObject(value, depth) {
     return `${value.name}: ${value.message}`;
   }
   if (value instanceof Date) {
-    return `Date(${value.toISOString()})`;
+    return describeDate(value);
   }
   if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
-    const items = limitItems([...value].map((item) => describeAt(item, depth + 1)));
+    const items = describeList(value.subarray(0, MAX_ITEMS), value.length, depth);
     return `${value.constructor.name}(${value.length}) [${items.join(', ')}]`;
   }
   if (depth >= MAX_DEPTH) {
     return Array.isArray(value) ? `Array(${value.length})` : '{…}';
   }
   if (Array.isArray(value)) {
-    return `[${limitItems(value.map((item) => describeAt(item, depth + 1))).join(', ')}]`;
+    return `[${describeList(value.slice(0, MAX_ITEMS), value.length, depth).join(', ')}]`;
   }
   return describeEntries(value, depth);
 }
@@ -75,9 +92,15 @@ function describeAt(value, depth) {
 /**
  * Returns a short, human readable, serializable description of any value.
  * Used to report expected/actual values from the sandbox, where values cannot be cloned.
+ * Never throws: values that cannot be inspected (throwing getters, revoked proxies…) are reported
+ * as unprintable instead of breaking the test run.
  * @param {unknown} value
  * @returns {string}
  */
 export function describeValue(value) {
-  return describeAt(value, 0);
+  try {
+    return describeAt(value, 0);
+  } catch {
+    return UNPRINTABLE;
+  }
 }

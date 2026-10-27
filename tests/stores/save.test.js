@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from 'vue';
 
 import { createFixtureModule } from '../fixtures/modules.js';
@@ -20,8 +20,7 @@ function activatePinia(plugins) {
   setActivePinia(pinia);
 }
 
-function setup() {
-  const repository = createDefaultRepository();
+function setup(repository = createDefaultRepository()) {
   const engine = createEngine({
     registry: createRegistry([createFixtureModule()]),
     repository,
@@ -120,6 +119,27 @@ describe('useSaveStore', () => {
 
     store.importSave(backup);
     expect(store.player.name).toBe('Ada');
+  });
+
+  it('keeps state unchanged when storage fails, so the action can be retried', () => {
+    const repository = createDefaultRepository();
+    const failingRepository = {
+      ...repository,
+      save: vi.fn().mockImplementationOnce(() => {
+        throw new DOMException('Quota exceeded', 'QuotaExceededError');
+      }),
+    };
+    failingRepository.save.mockImplementation(repository.save);
+    const { store } = setup(failingRepository);
+
+    expect(() => store.completeLesson({ moduleId: 'alpha', lessonId: 'intro' })).toThrow(
+      'Quota exceeded',
+    );
+    expect(store.isLessonCompleted('alpha', 'intro')).toBe(false);
+
+    const retry = store.completeLesson({ moduleId: 'alpha', lessonId: 'intro' });
+    expect(retry.isAlreadyCompleted).toBe(false);
+    expect(repository.load().xp).toBe(10);
   });
 
   it('loads an existing save on creation', () => {

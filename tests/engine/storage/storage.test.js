@@ -56,14 +56,18 @@ describe('migrateEnvelope', () => {
     ).toThrow(expect.objectContaining({ code: 'unsupported-version' }));
   });
 
-  it.each([null, 'save', { version: 0, data: {} }, { version: 1.5, data: {} }, { version: 1 }])(
-    'rejects malformed envelope %j',
-    (value) => {
-      expect(() => migrateEnvelope(value, { targetVersion: 1, migrations: {} })).toThrow(
-        SaveFormatError,
-      );
-    },
-  );
+  it.each([
+    null,
+    'save',
+    { version: 0, data: {} },
+    { version: 1.5, data: {} },
+    { version: 1 },
+    { version: 1, data: [] },
+  ])('rejects malformed envelope %j', (value) => {
+    expect(() => migrateEnvelope(value, { targetVersion: 1, migrations: {} })).toThrow(
+      SaveFormatError,
+    );
+  });
 });
 
 describe('assertSaveData', () => {
@@ -159,6 +163,9 @@ describe('createLocalStorageRepository', () => {
       expect.objectContaining({ code: 'invalid-json' }),
     );
     expect(() => repository.importSave(envelope({ ...createEmptySave(), xp: -5 }))).toThrow(
+      expect.objectContaining({ code: 'invalid-format' }),
+    );
+    expect(() => repository.importSave(envelope([]))).toThrow(
       expect.objectContaining({ code: 'invalid-format' }),
     );
     expect(repository.load().xp).toBe(7);

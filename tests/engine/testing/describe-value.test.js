@@ -45,6 +45,36 @@ describe('describeValue', () => {
     );
   });
 
+  it('describes invalid dates without throwing', () => {
+    expect(describeValue(new Date(NaN))).toBe('Date(Invalid)');
+  });
+
+  it('reports values that cannot be inspected instead of throwing', () => {
+    const hostile = {
+      get trap() {
+        throw new Error('getter exploded');
+      },
+    };
+
+    expect(describeValue(hostile)).toBe('[unprintable value]');
+  });
+
+  it('only formats the items it shows', () => {
+    const hostile = {
+      get trap() {
+        throw new Error('should not be read');
+      },
+    };
+    const longArray = [...Array.from({ length: 16 }, (_, index) => index), hostile];
+    const wideObject = Object.fromEntries(
+      Array.from({ length: 16 }, (_, index) => [`k${index}`, index]),
+    );
+    wideObject.trap = hostile;
+
+    expect(describeValue(longArray)).toContain('… (+1)');
+    expect(describeValue(wideObject)).toContain('… (+1)');
+  });
+
   it('describes typed arrays and truncates them', () => {
     expect(describeValue(new Uint8Array([1, 0x50]))).toBe('Uint8Array(2) [1, 80 (0x50)]');
     expect(describeValue(new Uint8Array(4096))).toContain('… (+4080)');

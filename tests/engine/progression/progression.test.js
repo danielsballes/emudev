@@ -93,6 +93,23 @@ describe('unlocks', () => {
     expect(unlocked('missing')).toBe(false);
   });
 
+  it('keeps completed lessons unlocked when new lessons are inserted before them', () => {
+    const save = {
+      ...zeroDone(),
+      lessons: {
+        ...zeroDone().lessons,
+        'alpha/quiz-time': { completedAt: NOW.toISOString(), xpAwarded: 20 },
+      },
+    };
+
+    expect(isLessonUnlocked(save, registry, { moduleId: 'alpha', lessonId: 'quiz-time' })).toBe(
+      true,
+    );
+    expect(isLessonUnlocked(save, registry, { moduleId: 'alpha', lessonId: 'first-code' })).toBe(
+      false,
+    );
+  });
+
   it('keeps every lesson locked while the module is locked', () => {
     expect(
       isLessonUnlocked(createEmptySave(), registry, { moduleId: 'alpha', lessonId: 'intro' }),
