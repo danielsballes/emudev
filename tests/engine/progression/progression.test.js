@@ -216,6 +216,9 @@ describe('completeLesson', () => {
     expect(() =>
       completeLesson(createEmptySave(), registry, { moduleId: 'alpha', lessonId: 'intro' }),
     ).toThrow(ProgressionError);
+    expect(() =>
+      completeLesson(createEmptySave(), registry, { moduleId: 'alpha', lessonId: 'intro' }),
+    ).toThrow(expect.objectContaining({ code: 'locked-lesson' }));
   });
 
   it('uses the current time by default', () => {

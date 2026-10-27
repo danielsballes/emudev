@@ -51,6 +51,41 @@ describe('isDeepEqual', () => {
     ).toBe(false);
   });
 
+  it('compares regular expressions by source and flags', () => {
+    expect(isDeepEqual(/alpha/g, /alpha/g)).toBe(true);
+    expect(isDeepEqual(/alpha/g, /beta/g)).toBe(false);
+    expect(isDeepEqual(/alpha/g, /alpha/i)).toBe(false);
+  });
+
+  it('compares errors by name, message and own fields', () => {
+    expect(isDeepEqual(new Error('alpha'), new Error('alpha'))).toBe(true);
+    expect(isDeepEqual(new Error('alpha'), new Error('beta'))).toBe(false);
+    expect(isDeepEqual(new TypeError('x'), new RangeError('x'))).toBe(false);
+    const withCode = (code) => Object.assign(new Error('x'), { code });
+    expect(isDeepEqual(withCode(1), withCode(2))).toBe(false);
+  });
+
+  it('only treats opaque types as equal when they are the same instance', () => {
+    const weakMap = new WeakMap();
+
+    expect(isDeepEqual(weakMap, weakMap)).toBe(true);
+    expect(isDeepEqual(new WeakMap(), new WeakMap())).toBe(false);
+    expect(isDeepEqual(new WeakSet(), new WeakSet())).toBe(false);
+    expect(isDeepEqual(Promise.resolve(1), Promise.resolve(1))).toBe(false);
+  });
+
+  it('compares class instances key by key', () => {
+    class Cpu {
+      constructor(pc) {
+        this.pc = pc;
+      }
+    }
+
+    expect(isDeepEqual(new Cpu(0x2_00), new Cpu(0x2_00))).toBe(true);
+    expect(isDeepEqual(new Cpu(0x2_00), new Cpu(0x2_02))).toBe(false);
+    expect(isDeepEqual(new Cpu(0x2_00), { pc: 0x2_00 })).toBe(false);
+  });
+
   it('compares ArrayBuffers and DataViews byte by byte', () => {
     expect(isDeepEqual(new Uint8Array([1]).buffer, new Uint8Array([1]).buffer)).toBe(true);
     expect(isDeepEqual(new Uint8Array([1]).buffer, new Uint8Array([2]).buffer)).toBe(false);

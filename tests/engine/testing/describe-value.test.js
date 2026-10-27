@@ -75,6 +75,25 @@ describe('describeValue', () => {
     expect(describeValue(wideObject)).toContain('… (+1)');
   });
 
+  it('describes maps and sets with their contents', () => {
+    expect(describeValue(new Map([['pc', 0x2_00]]))).toBe('Map(1) { "pc" => 512 (0x200) }');
+    expect(describeValue(new Set([1, 'a']))).toBe('Set(2) { 1, "a" }');
+    const twentyNumbers = new Set(Array.from({ length: 20 }, (_, index) => index));
+    expect(describeValue(twentyNumbers)).toContain('… (+4) }');
+    expect(describeValue({ registers: { v: new Map([[0, 1]]) } })).toBe(
+      '{ registers: { v: Map(1) } }',
+    );
+    expect(describeValue([[new Set([1])]])).toBe('[[Set(1)]]');
+  });
+
+  it('describes buffers, data views and regular expressions', () => {
+    const bytes = new Uint8Array([9, 1, 2, 9]).buffer;
+
+    expect(describeValue(bytes)).toBe('ArrayBuffer(4) [9, 1, 2, 9]');
+    expect(describeValue(new DataView(bytes, 1, 2))).toBe('DataView(2) [1, 2]');
+    expect(describeValue(/ab+c/gi)).toBe('/ab+c/gi');
+  });
+
   it('describes typed arrays and truncates them', () => {
     expect(describeValue(new Uint8Array([1, 0x50]))).toBe('Uint8Array(2) [1, 80 (0x50)]');
     expect(describeValue(new Uint8Array(4096))).toContain('… (+4080)');

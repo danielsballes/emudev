@@ -64,31 +64,51 @@ function isSamePlainObject(left, right) {
   );
 }
 
+const isSameBytes = (left, right) => isSameSequence([...toBytes(left)], [...toBytes(right)]);
+
+/**
+ * Built-ins whose state lives in internal slots rather than enumerable keys, so the generic
+ * key-by-key comparison would wrongly report any two instances as equal.
+ */
+const BUILT_IN_COMPARERS = [
+  [ArrayBuffer, isSameBytes],
+  [DataView, isSameBytes],
+  [Date, (left, right) => left.getTime() === right.getTime()],
+  [RegExp, (left, right) => left.source === right.source && left.flags === right.flags],
+  [
+    Error,
+    (left, right) =>
+      left.name === right.name && left.message === right.message && isSamePlainObject(left, right),
+  ],
+  [Map, isSameMap],
+  [Set, isSameSet],
+];
+
+/**
+ * Types whose contents cannot be inspected: equal only when they are the same instance, which
+ * `isDeepEqual` already checks with `Object.is`.
+ */
+const OPAQUE_TYPES = [WeakMap, WeakSet, WeakRef, Promise];
+
 function isSameObject(left, right) {
   if (Object.getPrototypeOf(left) !== Object.getPrototypeOf(right)) {
     return false;
   }
-  if (left instanceof ArrayBuffer || left instanceof DataView) {
-    return isSameSequence([...toBytes(left)], [...toBytes(right)]);
-  }
   if (Array.isArray(left) || isTypedArray(left)) {
     return isSameSequence([...left], [...right]);
   }
-  if (left instanceof Date) {
-    return left.getTime() === right.getTime();
+  if (OPAQUE_TYPES.some((Type) => left instanceof Type)) {
+    return false;
   }
-  if (left instanceof Map) {
-    return isSameMap(left, right);
-  }
-  if (left instanceof Set) {
-    return isSameSet(left, right);
-  }
-  return isSamePlainObject(left, right);
+  const comparer = BUILT_IN_COMPARERS.find(([Type]) => left instanceof Type)?.[1];
+  // Plain objects and class instances (e.g. the student's own CPU class) compare key by key.
+  return (comparer ?? isSamePlainObject)(left, right);
 }
 
 /**
- * Structural equality for primitives, arrays, typed arrays, ArrayBuffers, DataViews, plain
- * objects, dates, maps and sets. Map entries and set members are compared structurally.
+ * Structural equality for primitives, arrays, typed arrays, ArrayBuffers, DataViews, dates,
+ * regular expressions, errors, maps, sets, plain objects and class instances. Map entries and set
+ * members are compared structurally; opaque types (WeakMap, Promise…) only by identity.
  * @param {unknown} left
  * @param {unknown} right
  * @returns {boolean}

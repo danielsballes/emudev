@@ -46,24 +46,76 @@ function describeDate(value) {
   return Number.isNaN(value.getTime()) ? 'Date(Invalid)' : `Date(${value.toISOString()})`;
 }
 
+/**
+ * Describes a byte view as `Name(length) [b0, b1, …]`, formatting only the bytes shown.
+ */
+function describeBytes(name, bytes, depth) {
+  const items = describeList(bytes.subarray(0, MAX_ITEMS), bytes.length, depth);
+  return `${name}(${bytes.length}) [${items.join(', ')}]`;
+}
+
+function describeMap(value, depth) {
+  const shown = value
+    .entries()
+    .take(MAX_ITEMS)
+    .map(([key, item]) => `${describeAt(key, depth + 1)} => ${describeAt(item, depth + 1)}`)
+    .toArray();
+  return `Map(${value.size}) { ${withHiddenCount(shown, value.size).join(', ')} }`;
+}
+
+function describeSet(value, depth) {
+  const shown = value
+    .values()
+    .take(MAX_ITEMS)
+    .map((item) => describeAt(item, depth + 1))
+    .toArray();
+  return `Set(${value.size}) { ${withHiddenCount(shown, value.size).join(', ')} }`;
+}
+
+// Types described the same way at any depth.
+const LEAF_DESCRIBERS = [
+  [Error, (value) => `${value.name}: ${value.message}`],
+  [Date, describeDate],
+  [RegExp, String],
+  [ArrayBuffer, (value, depth) => describeBytes('ArrayBuffer', new Uint8Array(value), depth)],
+  [
+    DataView,
+    (value, depth) =>
+      describeBytes(
+        'DataView',
+        new Uint8Array(value.buffer, value.byteOffset, value.byteLength),
+        depth,
+      ),
+  ],
+];
+
+function describeCollapsed(value) {
+  if (Array.isArray(value)) {
+    return `Array(${value.length})`;
+  }
+  return value instanceof Map || value instanceof Set
+    ? `${value.constructor.name}(${value.size})`
+    : '{…}';
+}
+
 function describeObject(value, depth) {
-  if (value instanceof Error) {
-    return `${value.name}: ${value.message}`;
+  const describeLeaf = LEAF_DESCRIBERS.find(([Type]) => value instanceof Type)?.[1];
+  if (describeLeaf) {
+    return describeLeaf(value, depth);
   }
-  if (value instanceof Date) {
-    return describeDate(value);
-  }
-  if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
-    const items = describeList(value.subarray(0, MAX_ITEMS), value.length, depth);
-    return `${value.constructor.name}(${value.length}) [${items.join(', ')}]`;
+  if (ArrayBuffer.isView(value)) {
+    return describeBytes(value.constructor.name, value, depth);
   }
   if (depth >= MAX_DEPTH) {
-    return Array.isArray(value) ? `Array(${value.length})` : '{…}';
+    return describeCollapsed(value);
   }
   if (Array.isArray(value)) {
     return `[${describeList(value.slice(0, MAX_ITEMS), value.length, depth).join(', ')}]`;
   }
-  return describeEntries(value, depth);
+  if (value instanceof Map) {
+    return describeMap(value, depth);
+  }
+  return value instanceof Set ? describeSet(value, depth) : describeEntries(value, depth);
 }
 
 function describeAt(value, depth) {

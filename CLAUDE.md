@@ -102,14 +102,16 @@ token, outcome }`. Statuses: `passed`, `failed`, `error` (phase `student` | `tes
 
 ## Adding a module
 
-1. Create `src/modules/<id>/module.js` with the manifest:
+1. Create `src/modules/<id>/module.js` with the manifest. Heavy parts (lesson content, exercise
+   sources, quizzes) are **loader functions**, so they are only downloaded when needed; the
+   registry rejects plain objects there.
 
    ```js
    export default {
      id: 'chip8',
      order: 1,
-     requires: ['fundamentals'],
-     era: 'chip8', // visual era used inside the module (src/themes/<era>)
+     requires: ['fundamentals'], // only modules with a lower `order`
+     era: 'chip8', // visual era used inside the module (src/themes/<era>), wired in phase 3
      region: { titleKey: 'modules.chip8.title', icon },
      chapters: [
        {
@@ -121,9 +123,18 @@ token, outcome }`. Statuses: `passed`, `failed`, `error` (phase `student` | `tes
              type: 'exercise', // 'lesson' | 'exercise' | 'quiz' | 'boss'
              xp: 50,
              content: () => import('./content/es/07-draw-sprite.md'),
-             exercise: { starter, tests, solution },
+             exercise: () => import('./exercises/draw-sprite/index.js'), // exercise and boss
+             // quiz: () => import('./quizzes/…'), // required for type 'quiz'
            },
          ],
+       },
+     ],
+     badges: [
+       // criteria.type: 'lesson' | 'chapter' (both need `id`) | 'module'
+       {
+         id: 'ibm-logo',
+         titleKey: 'modules.chip8.badges.ibmLogo',
+         criteria: { type: 'lesson', id: 'draw-sprite' },
        },
      ],
    };
@@ -135,7 +146,16 @@ token, outcome }`. Statuses: `passed`, `failed`, `error` (phase `student` | `tes
 5. Exercises in `src/modules/<id>/exercises/<lesson-id>/`:
    - `starter.js`: what the student sees; includes the solved parts from earlier lessons.
    - `solution.js`: reference solution.
-   - `tests.js`: hidden tests run by the runner.
+   - `tests.js`: hidden tests run by the runner
+     (`export default [{ name, run: ({ student, expect }) => …, hint? }]`).
+   - `index.js`: the loader target, exporting the three files as source text:
+
+     ```js
+     export { default as starter } from './starter.js?raw';
+     export { default as solution } from './solution.js?raw';
+     export { default as tests } from './tests.js?raw';
+     ```
+
    - Mandatory meta-test: `solution.js` passes `tests.js` and `starter.js` fails them.
 6. Module UI strings in `src/i18n/locales/es.json` under `modules.<id>`.
 
