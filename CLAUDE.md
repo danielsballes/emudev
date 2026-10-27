@@ -45,7 +45,9 @@ Modern JavaScript (ESM, ES2025), no TypeScript; JSDoc on the engine's public API
     (`@intlify/vue-i18n/no-raw-text`) as well as unused or missing keys.
   - Lesson content: `src/modules/<id>/content/<locale>/`.
 - Components in PascalCase (`PixelButton.vue`), every other file in kebab-case.
-- Tests next to the code: `foo.js` → `foo.test.js`.
+- Tests live in `tests/`, mirroring `src/`: `src/engine/runner/foo.js` →
+  `tests/engine/runner/foo.test.js`. They import application code through the `@/` alias. Shared
+  fixtures live in `tests/fixtures/`.
 - Alias `@` → `src/`.
 - Style only with tokens from the active theme (colors, fonts, borders, shadows, motion), never
   hardcoded colors or fonts: the UI changes era and every component must look right in all of
@@ -82,19 +84,34 @@ src/
 └─ modules/<id>/  # one module per emulated system
 ```
 
-Current state: only the bootstrap exists (empty app, router, i18n, tooling). See the phases in
+Current state: bootstrap + engine. There is no game UI or module yet. See the phases in
 PLAN.md.
+
+Engine pieces:
+
+- `createEngine()` (`src/engine/plugin.js`): Vue plugin that provides `{ registry, repository,
+runner }`; `useEngine()` returns them. Tests inject fakes.
+- `useSaveStore()` (`src/stores/save.js`): the player's save. The save is replaced immutably
+  (`shallowRef`) on every change, after being written through the repository (write first, so a
+  failed write leaves the state unchanged).
+- Runner: protocol `{ type: 'run', token, studentSource, testsSource }` → `{ type: 'result',
+token, outcome }`. Statuses: `passed`, `failed`, `error` (phase `student` | `tests` | `worker`),
+  `timeout`. Assertion errors travel as data (`matcher`, `expected`, `actual`) so the UI can
+  explain them in the student's language.
+- Exercise tests: `export default [{ name, run: ({ student, expect }) => …, hint? }]`.
 
 ## Adding a module
 
-1. Create `src/modules/<id>/module.js` with the manifest:
+1. Create `src/modules/<id>/module.js` with the manifest. Heavy parts (lesson content, exercise
+   sources, quizzes) are **loader functions**, so they are only downloaded when needed; the
+   registry rejects plain objects there.
 
    ```js
    export default {
      id: 'chip8',
      order: 1,
-     requires: ['fundamentals'],
-     era: 'chip8', // visual era used inside the module (src/themes/<era>)
+     requires: ['fundamentals'], // only modules with a lower `order`
+     era: 'chip8', // visual era used inside the module (src/themes/<era>), wired in phase 3
      region: { titleKey: 'modules.chip8.title', icon },
      chapters: [
        {
@@ -106,9 +123,18 @@ PLAN.md.
              type: 'exercise', // 'lesson' | 'exercise' | 'quiz' | 'boss'
              xp: 50,
              content: () => import('./content/es/07-draw-sprite.md'),
-             exercise: { starter, tests, solution },
+             exercise: () => import('./exercises/draw-sprite/index.js'), // exercise and boss
+             // quiz: () => import('./quizzes/…'), // required for type 'quiz'
            },
          ],
+       },
+     ],
+     badges: [
+       // criteria.type: 'lesson' | 'chapter' (both need `id`) | 'module'
+       {
+         id: 'ibm-logo',
+         titleKey: 'modules.chip8.badges.ibmLogo',
+         criteria: { type: 'lesson', id: 'draw-sprite' },
        },
      ],
    };
@@ -120,7 +146,16 @@ PLAN.md.
 5. Exercises in `src/modules/<id>/exercises/<lesson-id>/`:
    - `starter.js`: what the student sees; includes the solved parts from earlier lessons.
    - `solution.js`: reference solution.
-   - `tests.js`: hidden tests run by the runner.
+   - `tests.js`: hidden tests run by the runner
+     (`export default [{ name, run: ({ student, expect }) => …, hint? }]`).
+   - `index.js`: the loader target, exporting the three files as source text:
+
+     ```js
+     export { default as starter } from './starter.js?raw';
+     export { default as solution } from './solution.js?raw';
+     export { default as tests } from './tests.js?raw';
+     ```
+
    - Mandatory meta-test: `solution.js` passes `tests.js` and `starter.js` fails them.
 6. Module UI strings in `src/i18n/locales/es.json` under `modules.<id>`.
 

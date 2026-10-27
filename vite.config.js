@@ -17,12 +17,13 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    include: ['src/**/*.test.js', 'tests/**/*.test.js'],
+    include: ['tests/**/*.test.js'],
     setupFiles: ['tests/setup.js'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{js,vue}'],
-      exclude: ['src/main.js', 'src/**/*.test.js'],
+      // Worker glue is exercised in the browser; its logic lives in tested modules.
+      exclude: ['src/main.js', 'src/**/*.worker.js'],
       reporter: ['text', 'html', 'lcov'],
       thresholds: {
         lines: 80,

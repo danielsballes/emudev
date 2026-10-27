@@ -70,6 +70,12 @@ export default [
 
       // Unicorn tweaks for a Vue codebase.
       'unicorn/filename-case': ['error', { cases: { kebabCase: true, pascalCase: true } }],
+      // Standard JSDoc blocks use leading asterisks.
+      'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
+      // `null` is meaningful in persisted JSON (e.g. "no player yet") and DOM APIs.
+      'unicorn/no-null': 'off',
+      // Passing `undefined` explicitly is clearer in assertions about missing values.
+      'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
     },
   },
   {

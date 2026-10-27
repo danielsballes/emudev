@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import HomeView from './HomeView.vue';
+import HomeView from '@/views/HomeView.vue';
 
 describe('HomeView', () => {
   it('renders the app name and tagline from the Spanish locale', () => {

@@ -12,8 +12,9 @@ Each phase is one or more independent PRs. Engine, UI and content are never mixe
 
 - [x] **Phase 1: Bootstrap.** Vite + Vue, Tailwind, i18n, ESLint/Prettier, Vitest,
       husky/commitlint, templates, CI/CD with semantic-release and GitHub Pages.
-- [ ] **Phase 2: Engine.** Module registry, versioned storage, Web Worker runner, test
-      mini-library, progression (XP, levels, badges, unlocks).
+- [x] **Phase 2: Engine.** Module registry, versioned storage, Web Worker runner, test
+      mini-library, progression (XP, levels, badges, unlocks), `createEngine` plugin and
+      `useSaveStore` Pinia store.
 - [ ] **Phase 3: RPG shell.** Character creation, HUD, world map, module map, lesson view
       (content + CodeMirror editor + test results), profile, save export/import.
 - [ ] **Phase 4: CHIP-8 core + Sandbox.** Reference emulator with tests per opcode; sandbox with a

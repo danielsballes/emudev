@@ -1,8 +1,8 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import App from './App.vue';
-import { router } from './router';
+import App from '@/App.vue';
+import { router } from '@/router';
 
 describe('App', () => {
   it('renders the routed view', async () => {

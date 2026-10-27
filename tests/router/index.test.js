@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { router } from './index';
+import { router } from '@/router';
 
 describe('router', () => {
   it('redirects unknown paths to home', async () => {
