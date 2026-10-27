@@ -17,10 +17,18 @@ npm run lint           # strict ESLint, --max-warnings 0
 npm run format:check   # Prettier
 npm run test:coverage  # Vitest + coverage (80% threshold)
 npm run build          # production build (+ 404.html for GitHub Pages)
+npm run check          # all of the above except dev, same as CI
 ```
 
-Before calling anything done, all four commands (`lint`, `format:check`, `test:coverage`, `build`)
-must pass. They are the same checks required on every PR.
+Checks run automatically through Husky, so there is no need to run them by hand:
+
+| Hook         | What runs                                                                        |
+| ------------ | -------------------------------------------------------------------------------- |
+| `pre-commit` | lint-staged on staged files: ESLint `--fix`, Prettier and `vitest related` tests |
+| `commit-msg` | commitlint (Conventional Commits)                                                |
+| `pre-push`   | `npm run check`: full lint, format check, tests with coverage and build          |
+
+`npm run check` mirrors the required PR checks, so a successful push means CI should pass too.
 
 ## Stack
 
@@ -50,7 +58,7 @@ Modern JavaScript (ESM, ES2025), no TypeScript; JSDoc on the engine's public API
 
 - **Never commit without Daniel's explicit authorization at that moment.**
 - **Commits and PRs in English**, including the PR title, description and template.
-- Conventional Commits (commitlint in the `commit-msg` hook; lint-staged in `pre-commit`).
+- Conventional Commits, enforced by the `commit-msg` hook (see the hooks table above).
 - Branch from `main`; open a PR with the template; **squash merge**, so the PR title must be a
   Conventional Commit (validated by the `pr-title` check).
 - One PR per phase or piece of work; do not mix engine, UI and content in the same PR.
