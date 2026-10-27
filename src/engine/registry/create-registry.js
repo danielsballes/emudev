@@ -29,11 +29,13 @@ function findManifestProblems(manifests) {
 
 function findDuplicateModules(manifests, orderById) {
   const problems = [];
-  for (const manifest of manifests) {
-    if (orderById.has(manifest?.id)) {
-      problems.push(`duplicate module id "${manifest.id}"`);
+  // Manifests without a string id are already reported by validateModule.
+  const identified = manifests.filter((manifest) => typeof manifest?.id === 'string');
+  for (const { id, order } of identified) {
+    if (orderById.has(id)) {
+      problems.push(`duplicate module id "${id}"`);
     }
-    orderById.set(manifest?.id, manifest?.order);
+    orderById.set(id, order);
   }
   return problems;
 }

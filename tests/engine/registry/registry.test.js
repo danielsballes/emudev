@@ -168,6 +168,10 @@ describe('createRegistry', () => {
     expect(registry.getNextLesson('alpha', 'missing')).toBeUndefined();
   });
 
+  it('reports every problem when several manifests have no id', () => {
+    expect(() => createRegistry([null, null, { order: 1 }])).toThrow(ModuleRegistryError);
+  });
+
   it('accepts requirements on earlier modules', () => {
     expect(() => createRegistry([zero, { ...alpha, requires: ['zero'] }])).not.toThrow();
   });

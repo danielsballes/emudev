@@ -2,6 +2,27 @@ import { describe, expect, it } from 'vitest';
 
 import { isDeepEqual } from '@/engine/testing/deep-equal.js';
 
+function createCpu(pc) {
+  const cpu = { pc, bus: {} };
+  cpu.bus.cpu = cpu;
+  cpu.self = cpu;
+  return cpu;
+}
+
+function createRing(values) {
+  const nodes = values.map((value) => ({ value }));
+  for (const [index, node] of nodes.entries()) {
+    node.next = nodes[(index + 1) % nodes.length];
+  }
+  return nodes[0];
+}
+
+function createSelfList() {
+  const list = [];
+  list.push(list);
+  return list;
+}
+
 describe('isDeepEqual', () => {
   it('compares primitives with Object.is semantics', () => {
     expect(isDeepEqual(1, 1)).toBe(true);
@@ -84,6 +105,22 @@ describe('isDeepEqual', () => {
     expect(isDeepEqual(new Cpu(0x2_00), new Cpu(0x2_00))).toBe(true);
     expect(isDeepEqual(new Cpu(0x2_00), new Cpu(0x2_02))).toBe(false);
     expect(isDeepEqual(new Cpu(0x2_00), { pc: 0x2_00 })).toBe(false);
+  });
+
+  it('compares cyclic structures without overflowing the stack', () => {
+    expect(isDeepEqual(createCpu(0x2_00), createCpu(0x2_00))).toBe(true);
+    expect(isDeepEqual(createCpu(0x2_00), createCpu(0x2_02))).toBe(false);
+    expect(isDeepEqual(createRing([1, 2, 3]), createRing([1, 2, 3]))).toBe(true);
+    expect(isDeepEqual(createRing([1, 2, 3]), createRing([1, 2, 4]))).toBe(false);
+    expect(isDeepEqual(createSelfList(), createSelfList())).toBe(true);
+  });
+
+  it('compares cyclic members of sets and maps', () => {
+    const sameCpus = [new Set([createCpu(1)]), new Set([createCpu(1)])];
+    const differentCpus = [new Map([['cpu', createCpu(1)]]), new Map([['cpu', createCpu(2)]])];
+
+    expect(isDeepEqual(...sameCpus)).toBe(true);
+    expect(isDeepEqual(...differentCpus)).toBe(false);
   });
 
   it('compares ArrayBuffers and DataViews byte by byte', () => {
