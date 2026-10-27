@@ -1,27 +1,27 @@
-name: Lección o módulo
-description: Proponer o corregir contenido educativo
+name: Lesson or module
+description: Propose or fix educational content
 labels: [content]
 body:
   - type: input
     id: module
     attributes:
-      label: Módulo
+      label: Module
       placeholder: chip8
     validations:
       required: true
   - type: input
     id: lesson
     attributes:
-      label: Lección (si aplica)
+      label: Lesson (if applicable)
       placeholder: 05-decode
   - type: textarea
     id: details
     attributes:
-      label: Qué hay que añadir o corregir
+      label: What should be added or fixed
     validations:
       required: true
   - type: textarea
     id: references
     attributes:
-      label: Referencias
-      description: Documentación técnica, specs, test ROMs...
+      label: References
+      description: Technical documentation, specs, test ROMs...
