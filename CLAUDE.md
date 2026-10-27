@@ -1,100 +1,108 @@
 # CLAUDE.md
 
-Guía para trabajar en este repositorio (personas y agentes). El roadmap y las decisiones de
-producto están en [PLAN.md](PLAN.md).
+Guide for working in this repository (humans and agents). The roadmap and product decisions live
+in [PLAN.md](PLAN.md).
 
-## Qué es
+## What it is
 
-EmuDev Academy: web estilo codedex (RPG pixel-art, XP, niveles, insignias) para aprender a
-construir emuladores. Cada sistema es un **módulo** (una región del mapa). Sin backend por ahora:
-el progreso se guarda en `localStorage` y el código del alumno se ejecuta en el navegador.
+EmuDev Academy: a codedex-style web app (pixel-art RPG, XP, levels, badges) to learn how to build
+emulators. Each system is a **module** (a region of the world map). No backend for now: progress
+is stored in `localStorage` and the student's code runs in the browser.
 
-## Comandos
+## Commands
 
 ```bash
-npm run dev            # servidor de desarrollo
-npm run lint           # ESLint estricto, --max-warnings 0
+npm run dev            # development server
+npm run lint           # strict ESLint, --max-warnings 0
 npm run format:check   # Prettier
-npm run test:coverage  # Vitest + cobertura (umbral 80 %)
-npm run build          # build de producción (+ 404.html para GitHub Pages)
+npm run test:coverage  # Vitest + coverage (80% threshold)
+npm run build          # production build (+ 404.html for GitHub Pages)
 ```
 
-Antes de dar algo por terminado, los cuatro comandos (`lint`, `format:check`, `test:coverage`,
-`build`) deben pasar. Son los mismos checks que exige el PR.
+Before calling anything done, all four commands (`lint`, `format:check`, `test:coverage`, `build`)
+must pass. They are the same checks required on every PR.
 
 ## Stack
 
-Vue 3 (`<script setup>`), Vite, Vue Router, Pinia, vue-i18n, Tailwind CSS 4 (configuración
-CSS-first en `src/styles/main.css`), Vitest + Vue Test Utils, ESLint (flat config) + Prettier.
-JavaScript moderno (ESM, ES2025), sin TypeScript; JSDoc en las APIs públicas del engine.
+Vue 3 (`<script setup>`), Vite, Vue Router, Pinia, vue-i18n, Tailwind CSS 4 (CSS-first
+configuration in `src/styles/main.css`), Vitest + Vue Test Utils, ESLint (flat config) + Prettier.
+Modern JavaScript (ESM, ES2025), no TypeScript; JSDoc on the engine's public APIs.
 
-## Convenciones
+## Conventions
 
-- **Idioma del código: inglés** (variables, funciones, archivos, comentarios, commits).
-- **Textos visibles: español**, siempre vía i18n:
-  - Interfaz: `src/i18n/locales/es.json` + `t('key')`. ESLint prohíbe texto sin traducir en
-    templates (`@intlify/vue-i18n/no-raw-text`) y claves sin usar o inexistentes.
-  - Contenido de lecciones: `src/modules/<id>/content/<locale>/`.
-- Componentes en PascalCase (`PixelButton.vue`), el resto de archivos en kebab-case.
-- Tests junto al código: `foo.js` → `foo.test.js`.
+- **English in the repository**: code (variables, functions, files, comments), commits, PRs,
+  documentation (`README.md`, `CLAUDE.md`, `PLAN.md`) and GitHub templates.
+- **User-facing text: Spanish**, always through i18n:
+  - UI: `src/i18n/locales/es.json` + `t('key')`. ESLint forbids untranslated text in templates
+    (`@intlify/vue-i18n/no-raw-text`) as well as unused or missing keys.
+  - Lesson content: `src/modules/<id>/content/<locale>/`.
+- Components in PascalCase (`PixelButton.vue`), every other file in kebab-case.
+- Tests live in `tests/`, mirroring `src/`: `src/engine/runner/foo.js` →
+  `tests/engine/runner/foo.test.js`. They import application code through the `@/` alias. Shared
+  fixtures live in `tests/fixtures/`.
 - Alias `@` → `src/`.
-- Paleta y fuentes: usar los tokens de `@theme` (`bg-night`, `text-gold`, `font-pixel`…), no
-  colores sueltos.
-- No desactivar reglas de ESLint con comentarios salvo justificación explícita en el propio
-  comentario.
+- Style only with tokens from the active theme (colors, fonts, borders, shadows, motion), never
+  hardcoded colors or fonts: the UI changes era and every component must look right in all of
+  them.
+- Do not disable ESLint rules with comments unless the comment itself explains why.
 
-## Git y releases
+## Git and releases
 
-- **Nunca commitear sin autorización explícita de Daniel en ese momento.**
-- Conventional Commits (commitlint en el hook `commit-msg`; lint-staged en `pre-commit`).
-- Ramas desde `main`; PR con la plantilla; **squash merge**, así que el título del PR debe ser un
-  Conventional Commit (lo valida el check `pr-title`).
-- Un PR por fase o por pieza; no mezclar engine, UI y contenido en el mismo PR.
-- `main` está protegida: checks requeridos `lint`, `test`, `build`, `pr-title`.
-- Al hacer merge a `main`, `release.yml` ejecuta lint + tests, semantic-release (tag + GitHub
-  Release con `dist` en zip, sin commits de vuelta a `main`) y deploy a GitHub Pages.
-- La versión se inyecta en el build vía `VITE_APP_VERSION` → global `__APP_VERSION__`.
+- **Never commit without Daniel's explicit authorization at that moment.**
+- **Commits and PRs in English**, including the PR title, description and template.
+- Conventional Commits (commitlint in the `commit-msg` hook; lint-staged in `pre-commit`).
+- Branch from `main`; open a PR with the template; **squash merge**, so the PR title must be a
+  Conventional Commit (validated by the `pr-title` check).
+- One PR per phase or piece of work; do not mix engine, UI and content in the same PR.
+- `main` is protected: required checks `lint`, `test`, `build`, `pr-title`.
+- On merge to `main`, `release.yml` runs lint + tests, semantic-release (tag + GitHub Release with
+  `dist` zipped, no commits pushed back to `main`) and deploys to GitHub Pages.
+- The version is injected into the build through `VITE_APP_VERSION` → global `__APP_VERSION__`.
 
-## Arquitectura (objetivo)
+## Architecture (target)
 
 ```
 src/
-├─ engine/        # agnóstico de módulos, cobertura alta
-│  ├─ registry/   # descubre módulos con import.meta.glob('/src/modules/*/module.js')
-│  ├─ storage/    # ProgressRepository: localStorage versionado + migraciones (luego ApiRepository)
-│  ├─ runner/     # ejecuta código del alumno en un Web Worker con timeout
-│  ├─ testing/    # mini-lib expect/assert para los tests de ejercicios
-│  └─ progression/# XP, niveles, insignias, desbloqueos
-├─ stores/        # Pinia sobre engine/storage
-├─ components/    # ui/ (pixel UI) y lesson/ (editor, resultados, consola)
+├─ engine/        # module-agnostic, high coverage
+│  ├─ registry/   # discovers modules with import.meta.glob('/src/modules/*/module.js')
+│  ├─ storage/    # ProgressRepository: versioned localStorage + migrations (later ApiRepository)
+│  ├─ runner/     # runs student code in a Web Worker with a timeout
+│  ├─ testing/    # expect/assert mini-library for exercise tests
+│  └─ progression/# XP, levels, badges, unlocks
+├─ stores/        # Pinia on top of engine/storage
+├─ components/    # ui/ (pixel UI) and lesson/ (editor, results, console)
+├─ themes/        # one folder per visual era: CSS tokens + editor theme (see PLAN.md)
 ├─ views/         # WorldMap, ModuleMap, LessonView, Profile, Sandbox, CharacterCreate
-└─ modules/<id>/  # un módulo por sistema emulado
+└─ modules/<id>/  # one module per emulated system
 ```
 
-Estado actual: bootstrap + engine. Aún no hay UI de juego ni módulos. Ver fases en PLAN.md.
+Current state: bootstrap + engine. There is no game UI or module yet. See the phases in
+PLAN.md.
 
-Piezas del engine:
+Engine pieces:
 
-- `createEngine()` (`src/engine/plugin.js`): plugin de Vue que provee `{ registry, repository,
-runner }`; `useEngine()` los obtiene. En tests se inyectan fakes.
-- `useSaveStore()` (`src/stores/save.js`): partida del jugador. El save se reemplaza de forma
-  inmutable (`shallowRef`) en cada cambio y se persiste vía el repositorio.
-- Runner: protocolo `{ type: 'run', token, studentSource, testsSource }` → `{ type: 'result',
-token, outcome }`. Estados: `passed`, `failed`, `error` (fase `student` | `tests` | `worker`),
-  `timeout`. Los errores de aserción viajan como datos (`matcher`, `expected`, `actual`) para que
-  la UI los explique en el idioma del alumno.
-- Tests de ejercicio: `export default [{ name, run: ({ student, expect }) => …, hint? }]`.
+- `createEngine()` (`src/engine/plugin.js`): Vue plugin that provides `{ registry, repository,
+runner }`; `useEngine()` returns them. Tests inject fakes.
+- `useSaveStore()` (`src/stores/save.js`): the player's save. The save is replaced immutably
+  (`shallowRef`) on every change, after being written through the repository (write first, so a
+  failed write leaves the state unchanged).
+- Runner: protocol `{ type: 'run', token, studentSource, testsSource }` → `{ type: 'result',
+token, outcome }`. Statuses: `passed`, `failed`, `error` (phase `student` | `tests` | `worker`),
+  `timeout`. Assertion errors travel as data (`matcher`, `expected`, `actual`) so the UI can
+  explain them in the student's language.
+- Exercise tests: `export default [{ name, run: ({ student, expect }) => …, hint? }]`.
 
-## Cómo añadir un módulo
+## Adding a module
 
-1. Crear `src/modules/<id>/module.js` con el manifiesto:
+1. Create `src/modules/<id>/module.js` with the manifest:
 
    ```js
    export default {
      id: 'chip8',
      order: 1,
      requires: ['fundamentals'],
-     region: { titleKey: 'modules.chip8.title', theme: { primary: 'grass', accent: 'gold' }, icon },
+     era: 'chip8', // visual era used inside the module (src/themes/<era>)
+     region: { titleKey: 'modules.chip8.title', icon },
      chapters: [
        {
          id: 'display',
@@ -113,19 +121,20 @@ token, outcome }`. Estados: `passed`, `failed`, `error` (fase `student` | `tests
    };
    ```
 
-2. Emulador de referencia en `src/modules/<id>/core/`, con tests por instrucción.
-3. Componentes propios del módulo (pantalla, depurador…) en `src/modules/<id>/components/`.
-4. Lecciones en `src/modules/<id>/content/es/NN-slug.md`.
-5. Ejercicios en `src/modules/<id>/exercises/<lesson-id>/`:
-   - `starter.js`: lo que ve el alumno; incluye resuelto lo de lecciones anteriores.
-   - `solution.js`: solución de referencia.
-   - `tests.js`: tests ocultos que corre el runner.
-   - Meta-test obligatorio: `solution.js` pasa `tests.js` y `starter.js` los falla.
-6. Textos de UI del módulo en `src/i18n/locales/es.json` bajo `modules.<id>`.
+2. Reference emulator in `src/modules/<id>/core/`, with tests per instruction.
+3. Module-specific components (screen, debugger…) in `src/modules/<id>/components/`.
+4. Lessons in `src/modules/<id>/content/es/NN-slug.md`.
+5. Exercises in `src/modules/<id>/exercises/<lesson-id>/`:
+   - `starter.js`: what the student sees; includes the solved parts from earlier lessons.
+   - `solution.js`: reference solution.
+   - `tests.js`: hidden tests run by the runner.
+   - Mandatory meta-test: `solution.js` passes `tests.js` and `starter.js` fails them.
+6. Module UI strings in `src/i18n/locales/es.json` under `modules.<id>`.
 
-## ROMs, assets y licencias
+## ROMs, assets and licenses
 
-- Código: AGPL-3.0-only. Contenido (`content/`, `exercises/`, arte propio): CC BY-NC-SA 4.0.
-- Solo ROMs con licencia compatible o propias. Nunca BIOS, firmware ni claves con copyright
-  (GBA BIOS, claves de Switch…): se emulan por HLE o se usan reemplazos libres.
-- Cada ROM o asset de terceros se documenta en un `LICENSES.md` junto a él (autor, licencia, URL).
+- Code: AGPL-3.0-only. Content (`content/`, `exercises/`, original art): CC BY-NC-SA 4.0.
+- Only ROMs with a compatible license or our own. Never copyrighted BIOS, firmware or keys (GBA
+  BIOS, Switch keys…): emulate them through HLE or use free replacements.
+- Every third-party ROM or asset is documented in a `LICENSES.md` next to it (author, license,
+  URL).

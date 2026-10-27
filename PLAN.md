@@ -1,117 +1,155 @@
-# PLAN.md — Plan de construcción de EmuDev Academy
+# PLAN.md — EmuDev Academy build plan
 
-## Visión
+## Vision
 
-Una plataforma estilo codedex para aprender emulación, de menos a más complejidad: desde un
-intérprete CHIP-8 hasta contribuir a un fork de Eden (emulador de Nintendo Switch). Cada sistema
-es una región del mapa del mundo; se desbloquea al completar la anterior.
+A codedex-style platform to learn emulation, from simple to complex: from a CHIP-8 interpreter to
+contributing to a fork of Eden (a Nintendo Switch emulator). Each system is a region of the world
+map, unlocked by completing the previous one.
 
-## Fases de la plataforma
+## Platform phases
 
-Cada fase es uno o varios PRs independientes. No se mezclan engine, UI y contenido.
+Each phase is one or more independent PRs. Engine, UI and content are never mixed.
 
-- [x] **Fase 1: Bootstrap.** Vite + Vue, Tailwind, i18n, ESLint/Prettier, Vitest,
-      husky/commitlint, plantillas, CI/CD con semantic-release y GitHub Pages.
-- [x] **Fase 2: Engine.** Registry de módulos, storage versionado, runner en Web Worker,
-      mini-lib de tests, progresión (XP, niveles, insignias, desbloqueos), plugin `createEngine`
-      y store de Pinia `useSaveStore`.
-- [ ] **Fase 3: Shell RPG.** Creación de personaje, HUD, mapa del mundo, mapa del módulo, vista
-      de lección (contenido + editor CodeMirror + resultados de tests), perfil, exportar/importar
-      partida.
-- [ ] **Fase 4: Core CHIP-8 + Sandbox.** Emulador de referencia con tests por opcode; sandbox
-      con depurador (registros, memoria, paso a paso) y carga de ROMs.
-- [ ] **Fase 5: Contenido CHIP-8.** Capítulos 1–7 (hasta el logo IBM) y luego 8–14.
-- [ ] **Fase 6: Módulo 0, Fundamentos.**
-- [ ] **Fase 7+: Siguientes módulos** según el roadmap.
-- [ ] **Backend** (ver más abajo), cuando haga falta cuenta de usuario o sincronización.
+- [x] **Phase 1: Bootstrap.** Vite + Vue, Tailwind, i18n, ESLint/Prettier, Vitest,
+      husky/commitlint, templates, CI/CD with semantic-release and GitHub Pages.
+- [x] **Phase 2: Engine.** Module registry, versioned storage, Web Worker runner, test
+      mini-library, progression (XP, levels, badges, unlocks), `createEngine` plugin and
+      `useSaveStore` Pinia store.
+- [ ] **Phase 3: RPG shell.** Character creation, HUD, world map, module map, lesson view
+      (content + CodeMirror editor + test results), profile, save export/import.
+- [ ] **Phase 4: CHIP-8 core + Sandbox.** Reference emulator with tests per opcode; sandbox with a
+      debugger (registers, memory, step by step) and ROM loading.
+- [ ] **Phase 5: CHIP-8 content.** Chapters 1–7 (up to the IBM logo), then 8–14.
+- [ ] **Phase 6: Module 0, Fundamentals.**
+- [ ] **Phase 7+: Next modules** following the roadmap.
+- [ ] **Backend** (see below), once user accounts or sync are needed.
 
-## Roadmap de módulos
+## Module roadmap
 
-| #   | Módulo               | Lenguaje del alumno           | Qué se aprende                                                                                                   |
-| --- | -------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| 0   | Fundamentos          | JS                            | Binario, hexadecimal, operaciones bit a bit, endianness, cómo funciona una CPU (fetch/decode/execute)            |
-| 1   | CHIP-8               | JS                            | Intérprete completo: memoria, registros, pila, display por XOR, teclado, timers, quirks                          |
-| 2   | Game Boy (DMG)       | JS                            | CPU SM83, PPU por scanlines, timers, interrupciones, MBC, timing por ciclos, test ROMs de blargg/mooneye         |
-| 3   | NES                  | JS                            | 6502, PPU, mappers, APU, sincronización CPU/PPU                                                                  |
-| 4   | Game Boy Advance     | JS (C++ → WASM opcional)      | ARM7TDMI (ARM/Thumb), pipeline, DMA, HLE de la BIOS                                                              |
-| 5   | NDS o PS1            | C++ (WASM o backend)          | Dos CPUs / MIPS R3000, GTE, CD-ROM, rendimiento                                                                  |
-| 6   | Técnicas avanzadas   | C++                           | JIT/dynarec, HLE vs LLE, traducción de shaders, Vulkan, perfilado                                                |
-| 7   | Switch: fork de Eden | C++ en local + GitHub Actions | ARMv8, servicios HOS en HLE, GPU Maxwell, compilación con CMake, depuración y contribución en un codebase grande |
+| #   | Module              | Student language           | What is learned                                                                                       |
+| --- | ------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 0   | Fundamentals        | JS                         | Binary, hexadecimal, bitwise operations, endianness, how a CPU works (fetch/decode/execute)           |
+| 1   | CHIP-8              | JS                         | Full interpreter: memory, registers, stack, XOR display, keypad, timers, quirks                       |
+| 2   | Game Boy (DMG)      | JS                         | SM83 CPU, scanline PPU, timers, interrupts, MBC, cycle timing, blargg/mooneye test ROMs               |
+| 3   | NES                 | JS                         | 6502, PPU, mappers, APU, CPU/PPU synchronization                                                      |
+| 4   | Game Boy Advance    | JS (optional C++ → WASM)   | ARM7TDMI (ARM/Thumb), pipeline, DMA, BIOS HLE                                                         |
+| 5   | NDS or PS1          | C++ (WASM or backend)      | Two CPUs / MIPS R3000, GTE, CD-ROM, performance                                                       |
+| 6   | Advanced techniques | C++                        | JIT/dynarec, HLE vs LLE, shader translation, Vulkan, profiling                                        |
+| 7   | Switch: Eden fork   | Local C++ + GitHub Actions | ARMv8, HLE of HOS services, Maxwell GPU, CMake builds, debugging and contributing to a large codebase |
 
-Notas:
+Notes:
 
-- Hasta el módulo 4 todo corre en el navegador y se publica en GitHub Pages.
-- Nunca se distribuyen BIOS, firmware ni claves. En Eden el alumno usa sus propios volcados.
-- Eden es GPL-3.0: el fork del módulo 7 es un repo aparte y mantiene esa licencia.
+- Up to module 4 everything runs in the browser and is published on GitHub Pages.
+- BIOS, firmware and keys are never distributed. In Eden the student uses their own dumps.
+- Eden is GPL-3.0: the module 7 fork is a separate repository and keeps that license.
 
-## Estrategia de ejecución de código por lenguaje
+## Visual eras: the UI evolves with progress
 
-WASM (WebAssembly) es un formato binario que el navegador ejecuta casi a velocidad nativa. C, C++
-y Rust pueden compilarse a WASM. Ejecutar un `.wasm` siempre se puede hacer en el navegador; la
-decisión es **dónde se compila** el código del alumno.
+The UI changes its look to match the hardware being emulated: it gains colors, resolution and
+smoothness as the player advances. Progress is something you see, not just a number.
 
-| Opción                                                                  | Backend propio | C++ | Rust | Uso previsto                      |
-| ----------------------------------------------------------------------- | -------------- | --- | ---- | --------------------------------- |
-| JS en Web Worker                                                        | No             | —   | —    | Módulos 0–4                       |
-| Compilador clang en WASM dentro del navegador (descarga inicial pesada) | No             | Sí  | No   | C++ opcional en GBA y NDS/PS1     |
-| Servicio de compilación propio (Judge0/Piston o contenedores aislados)  | Sí             | Sí  | Sí   | Rust en la web, proyectos grandes |
-| Local + GitHub Actions en el fork del alumno                            | No             | Sí  | Sí   | Módulo Eden                       |
+| Era        | Module               | Look                                                               |
+| ---------- | -------------------- | ------------------------------------------------------------------ |
+| `terminal` | 0. Fundamentals      | Text terminal: green/amber phosphor on black, blinking cursor      |
+| `chip8`    | 1. CHIP-8            | 1-bit (two colors), big pixels, block borders, subtle CRT          |
+| `gameboy`  | 2. Game Boy          | 4 shades of green, handheld RPG dialog frames                      |
+| `nes`      | 3. NES               | 8-bit palette with few colors per element, double-bordered windows |
+| `gba`      | 4. GBA               | 15-bit color, banded gradients, finer sprites, translucent windows |
+| `early-3d` | 5. NDS / PS1         | Early 3D: simple polygons, dithering, depth, rotating transitions  |
+| `modern`   | 6–7. Advanced / Eden | Modern UI: clean, smooth animations, soft shadows, high resolution |
 
-Decisión pendiente: elegir entre WASM y backend al llegar al módulo 4/5. El backend de
-**ejecución** es un servicio distinto del backend de **usuarios y progreso**.
+Rules:
+
+- **Shell** (world map, HUD, profile): uses the most advanced unlocked era.
+- **Inside a module**: always that module's era (CHIP-8 lessons look 1-bit even if the player has
+  reached NES).
+- **Skins**: every unlocked era becomes a cosmetic the player can choose for the shell.
+- **Readability first**: the era applies to the "chrome" (map, HUD, buttons, dialogs,
+  transitions). Lesson text and the editor use a readable base with WCAG AA contrast in every era.
+- **Accessibility**: honor `prefers-reduced-motion` (no flicker, CRT effects or abrupt
+  transitions).
+- **Unlocking**: completing a module plays a short "new era unlocked" scene (the screen "reboots"
+  into the next generation). A homage, without logos, sounds or trademarks.
+
+Implementation:
+
+- Each era is a set of CSS variables (`[data-era="…"]`) in `src/themes/<era>/`: palette, fonts,
+  borders, radii, shadows, pixel scale, animation curves and CodeMirror theme. Components only
+  consume tokens.
+- Each module manifest declares its `era`.
+- The era chosen as skin is stored in the save (requires a save migration).
+- **Phase 3** builds the theme system and fully designs the `terminal` and `chip8` eras. Each
+  following era is designed (with the `frontend-design` skill) when its module arrives.
+
+## Code execution strategy per language
+
+WASM (WebAssembly) is a binary format that browsers run at near-native speed. C, C++ and Rust can
+be compiled to WASM. Running a `.wasm` file is always possible in the browser; the decision is
+**where the student's code gets compiled**.
+
+| Option                                                           | Own backend | C++ | Rust | Intended use                    |
+| ---------------------------------------------------------------- | ----------- | --- | ---- | ------------------------------- |
+| JS in a Web Worker                                               | No          | —   | —    | Modules 0–4                     |
+| clang compiled to WASM inside the browser (heavy first download) | No          | Yes | No   | Optional C++ in GBA and NDS/PS1 |
+| Own compilation service (Judge0/Piston or isolated containers)   | Yes         | Yes | Yes  | Rust on the web, large projects |
+| Local + GitHub Actions on the student's fork                     | No          | Yes | Yes  | Eden module                     |
+
+Pending decision: choose between WASM and a backend when reaching module 4/5. The **execution**
+backend is a separate service from the **users and progress** backend.
 
 ## Backend
 
-### Base de datos: recomendación PostgreSQL, no MongoDB
+### Database: PostgreSQL recommended over MongoDB
 
-- Los datos son relacionales: usuarios ↔ progreso ↔ lecciones ↔ insignias ↔ rankings ↔ envíos.
-  Postgres da integridad referencial, transacciones y agregaciones (leaderboards, estadísticas)
-  sin código extra.
-- Lo flexible (estado de una lección, código guardado del editor, metadatos) cabe en columnas
-  `JSONB`, que dan la comodidad de un documento cuando hace falta.
-- MongoDB funcionaría para guardar el progreso como un documento por usuario, pero los rankings,
-  las relaciones entre entidades y la integridad tendrían que resolverse en la aplicación.
+- The data is relational: users ↔ progress ↔ lessons ↔ badges ↔ leaderboards ↔ submissions.
+  Postgres provides referential integrity, transactions and aggregations (leaderboards, stats)
+  without extra code.
+- The flexible parts (lesson state, saved editor code, metadata) fit in `JSONB` columns, which
+  give document-style convenience where needed.
+- MongoDB would work for storing progress as one document per user, but leaderboards,
+  relationships between entities and integrity would have to be handled in the application.
 
-### Stack propuesto
+### Proposed stack
 
-- Node.js + Fastify (API REST, validación con JSON Schema).
-- Drizzle ORM + migraciones SQL versionadas.
-- Postgres gestionado (Neon o Supabase) para empezar sin operar servidores.
-- Autenticación con GitHub OAuth (el público es técnico y el módulo Eden ya usa GitHub).
-- Repo propio (`emudev-api`) o carpeta `server/` en monorepo con npm workspaces (decidir al
-  empezar).
-- Mismos estándares: ESLint estricto, Vitest, conventional commits, semantic-release.
+- Node.js + Fastify (REST API, JSON Schema validation).
+- Drizzle ORM + versioned SQL migrations.
+- Managed Postgres (Neon or Supabase) to start without operating servers.
+- GitHub OAuth authentication (the audience is technical and the Eden module already uses
+  GitHub).
+- Its own repository (`emudev-api`) or a `server/` folder in an npm workspaces monorepo (decide
+  when starting).
+- Same standards: strict ESLint, Vitest, conventional commits, semantic-release.
 
-### Modelo de datos inicial (borrador)
+### Initial data model (draft)
 
 - `users` (id, github_id, display_name, avatar, created_at)
 - `progress` (user_id, module_id, lesson_id, status, completed_at, xp_awarded)
 - `submissions` (id, user_id, lesson_id, code, passed, results JSONB, created_at)
-- `badges` (id, module_id, criteria JSONB) y `user_badges` (user_id, badge_id, earned_at)
-- `saves` (user_id, payload JSONB, version) para el estado libre del frontend
+- `badges` (id, module_id, criteria JSONB) and `user_badges` (user_id, badge_id, earned_at)
+- `saves` (user_id, payload JSONB, version) for free-form frontend state
 
-El contenido de las lecciones sigue viviendo en el repo del frontend; la BD solo guarda
-identificadores (`module_id`, `lesson_id`).
+Lesson content keeps living in the frontend repository; the database only stores identifiers
+(`module_id`, `lesson_id`).
 
-### Integración con el frontend
+### Frontend integration
 
-- El frontend accede al progreso a través de la interfaz `ProgressRepository`. Hoy:
-  `LocalStorageRepository`. Con backend: `ApiRepository`, sin tocar stores ni vistas.
-- Al primer login se ofrece importar la partida local existente.
-- Sin sesión, la web sigue funcionando en modo local.
+- The frontend accesses progress through the `ProgressRepository` interface. Today:
+  `LocalStorageRepository`. With a backend: `ApiRepository`, without touching stores or views.
+- On first login, the player is offered to import their existing local save.
+- Without a session, the app keeps working in local mode.
 
-### Fases del backend
+### Backend phases
 
-1. Auth con GitHub + perfil.
-2. Sincronización de progreso (importar partida local, resolver conflictos por fecha).
-3. Leaderboards, retos y estadísticas.
-4. Servicio de ejecución de código para lenguajes compilados (contenedores aislados sin red, con
-   límites de CPU y memoria y colas), si se elige esa vía.
+1. GitHub auth + profile.
+2. Progress sync (import the local save, resolve conflicts by date).
+3. Leaderboards, challenges and stats.
+4. Code execution service for compiled languages (isolated containers without network, CPU and
+   memory limits, queues), if that route is chosen.
 
-## Puntos abiertos
+## Open questions
 
-- Nombre y branding definitivos (placeholder: "EmuDev Academy").
-- Licencia de cada ROM de test a incluir; se verifica una por una antes de añadirla.
-- Estrategia final para C++ (WASM vs backend) a partir del módulo 4.
-- Primera versión: semantic-release publicará `1.0.0` en el primer `feat`/`fix` que llegue a
+- Final name and branding (placeholder: "EmuDev Academy").
+- License of each test ROM to include; verified one by one before adding it.
+- Final C++ strategy (WASM vs backend) from module 4 on.
+- First version: semantic-release will publish `1.0.0` on the first `feat`/`fix` that reaches
   `main`.

@@ -1,18 +1,19 @@
 # EmuDev Academy
 
-Plataforma interactiva con estética RPG para aprender a construir emuladores, inspirada en
-[codedex.io](https://www.codedex.io/). Se avanza por regiones de un mapa: cada región es un
-sistema (CHIP-8, Game Boy, NES, GBA… hasta trabajar sobre un fork de Eden para Switch) y cada
-lección suma XP, niveles e insignias.
+Interactive RPG-style platform to learn how to build emulators, inspired by
+[codedex.io](https://www.codedex.io/). Players advance through the regions of a map: each region
+is a system (CHIP-8, Game Boy, NES, GBA… up to working on a fork of Eden for Switch), and every
+lesson awards XP, levels and badges. The UI itself evolves era by era as the player progresses.
 
-> Estado: fase de bootstrap. El roadmap completo está en [PLAN.md](PLAN.md).
+> Status: early development. The full roadmap is in [PLAN.md](PLAN.md). The app's UI and lessons
+> are in Spanish.
 
-## Requisitos
+## Requirements
 
-- Node.js 24 (ver `.nvmrc`)
+- Node.js 24 (see `.nvmrc`)
 - npm 11
 
-## Puesta en marcha
+## Getting started
 
 ```bash
 npm install
@@ -21,33 +22,35 @@ npm run dev
 
 ## Scripts
 
-| Script                  | Qué hace                                    |
-| ----------------------- | ------------------------------------------- |
-| `npm run dev`           | Servidor de desarrollo de Vite              |
-| `npm run build`         | Build de producción en `dist/`              |
-| `npm run preview`       | Sirve el build localmente                   |
-| `npm run lint`          | ESLint estricto (falla con cualquier aviso) |
-| `npm run lint:fix`      | ESLint con autofix                          |
-| `npm run format`        | Formatea con Prettier                       |
-| `npm run format:check`  | Comprueba el formato                        |
-| `npm test`              | Ejecuta los tests con Vitest                |
-| `npm run test:watch`    | Vitest en modo watch                        |
-| `npm run test:coverage` | Tests con cobertura (umbral 80 %)           |
+| Script                  | What it does                         |
+| ----------------------- | ------------------------------------ |
+| `npm run dev`           | Vite development server              |
+| `npm run build`         | Production build in `dist/`          |
+| `npm run preview`       | Serves the build locally             |
+| `npm run lint`          | Strict ESLint (fails on any warning) |
+| `npm run lint:fix`      | ESLint with autofix                  |
+| `npm run format`        | Formats with Prettier                |
+| `npm run format:check`  | Checks formatting                    |
+| `npm test`              | Runs the tests with Vitest           |
+| `npm run test:watch`    | Vitest in watch mode                 |
+| `npm run test:coverage` | Tests with coverage (80% threshold)  |
 
-## Flujo de contribución
+## Contributing
 
-1. Crea una rama desde `main`.
-2. Commits con [Conventional Commits](https://www.conventionalcommits.org/) (lo valida commitlint
-   en el hook `commit-msg`).
-3. Abre un PR usando la plantilla. El título también debe ser un Conventional Commit, porque se
-   hace squash merge.
-4. Checks requeridos: `lint`, `test`, `build` y `pr-title`.
-5. Al hacer merge a `main`, semantic-release calcula la versión, publica el GitHub Release con el
-   build adjunto y despliega en GitHub Pages.
+1. Create a branch from `main`.
+2. Write commits following [Conventional Commits](https://www.conventionalcommits.org/)
+   (validated by commitlint in the `commit-msg` hook).
+3. Open a PR using the template. The title must also be a Conventional Commit, because PRs are
+   squash-merged. Commits, PRs and docs are written in English.
+4. Required checks: `lint`, `test`, `build` and `pr-title`.
+5. On merge to `main`, semantic-release computes the version, publishes the GitHub Release with
+   the build attached and deploys to GitHub Pages.
 
-## Licencias
+See [CLAUDE.md](CLAUDE.md) for conventions and architecture.
 
-- Código de la plataforma: [AGPL-3.0-only](LICENSE).
-- Contenido educativo (lecciones, ejercicios, arte propio):
+## Licenses
+
+- Platform code: [AGPL-3.0-only](LICENSE).
+- Educational content (lessons, exercises, original art):
   [CC BY-NC-SA 4.0](LICENSE-CONTENT.md).
-- ROMs y assets de terceros conservan su propia licencia, documentada junto a ellos.
+- Third-party ROMs and assets keep their own license, documented next to them.

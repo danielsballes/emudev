@@ -1,20 +1,20 @@
-name: Propuesta
-description: Nueva funcionalidad o mejora de la plataforma
+name: Feature request
+description: New platform feature or improvement
 labels: [enhancement]
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Problema o motivación
+      label: Problem or motivation
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Propuesta
+      label: Proposal
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternativas consideradas
+      label: Alternatives considered
