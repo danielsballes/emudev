@@ -1,4 +1,8 @@
 {
-  "*.{js,vue}": ["eslint --fix --max-warnings 0", "prettier --write"],
+  "*.{js,vue}": [
+    "eslint --fix --max-warnings 0",
+    "prettier --write",
+    "vitest related --run --passWithNoTests"
+  ],
   "*.{json,md,css,yml,yaml,html}": "prettier --write"
 }
