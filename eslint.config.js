@@ -70,6 +70,10 @@ export default [
 
       // Unicorn tweaks for a Vue codebase.
       'unicorn/filename-case': ['error', { cases: { kebabCase: true, pascalCase: true } }],
+      // False positives on vue-router's `router.push()`.
+      'unicorn/no-return-array-push': 'off',
+      // `props` is the Vue convention for defineProps().
+      'unicorn/name-replacements': ['error', { replacements: { props: false } }],
       // Standard JSDoc blocks use leading asterisks.
       'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
       // `null` is meaningful in persisted JSON (e.g. "no player yet") and DOM APIs.

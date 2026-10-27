@@ -20,16 +20,20 @@ export const SAVE_MIGRATIONS = Object.freeze({});
  *   Keyed by `moduleId/lessonId`.
  * @property {Record<string, string>} code Last code written per exercise (`moduleId/lessonId`).
  * @property {Record<string, { earnedAt: string }>} badges Keyed by `moduleId/badgeId`.
+ * @property {string | null} skin Era chosen for the shell, or null to follow progress.
  */
 
 /**
  * @returns {Save}
  */
 export function createEmptySave() {
-  return { player: null, xp: 0, lessons: {}, code: {}, badges: {} };
+  return { player: null, xp: 0, lessons: {}, code: {}, badges: {}, skin: null };
 }
 
 const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
+const isPlayer = (value) => value === null || isRecord(value);
+const isSkin = (value) => value === null || typeof value === 'string';
+const isXp = (value) => Number.isSafeInteger(value) && value >= 0;
 
 /**
  * Validates the top-level shape of save data (e.g. from an imported backup file).
@@ -38,12 +42,12 @@ const isRecord = (value) => typeof value === 'object' && value !== null && !Arra
 export function assertSaveData(data) {
   const isValid =
     isRecord(data) &&
-    (data.player === null || isRecord(data.player)) &&
-    Number.isSafeInteger(data.xp) &&
-    data.xp >= 0 &&
+    isPlayer(data.player) &&
+    isXp(data.xp) &&
     isRecord(data.lessons) &&
     isRecord(data.code) &&
-    isRecord(data.badges);
+    isRecord(data.badges) &&
+    isSkin(data.skin);
   if (!isValid) {
     throw new SaveFormatError('invalid-format', 'Save data has an unexpected shape');
   }

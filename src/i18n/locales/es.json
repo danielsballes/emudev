@@ -1,11 +1,41 @@
 {
   "app": {
-    "name": "EmuDev Academy",
-    "tagline": "Aprende a construir emuladores, desde CHIP-8 hasta consolas modernas.",
     "version": "Versión {version}"
   },
+  "avatars": {
+    "at": "arroba",
+    "ampersand": "et",
+    "section": "párrafo",
+    "pilcrow": "calderón",
+    "hash": "almohadilla",
+    "currency": "moneda"
+  },
+  "characterCreate": {
+    "boot": {
+      "bios": "emudev bios {version}",
+      "memory": "comprobando memoria... 4096 bytes correctos",
+      "cartridges": "buscando cartuchos... ninguno",
+      "map": "cargando el mapa del mundo... listo"
+    },
+    "skip": "Saltar arranque",
+    "motd": "Elige un nombre y un avatar para empezar tu partida.",
+    "login": "usuario:",
+    "avatar": "avatar:",
+    "submit": "Entrar",
+    "errors": {
+      "empty": "Escribe un nombre para continuar.",
+      "tooLong": "El nombre puede tener hasta {max} caracteres."
+    }
+  },
+  "hud": {
+    "level": "nivel {level}",
+    "levelLabel": "nivel",
+    "progress": "Progreso hacia el nivel {level}",
+    "xp": "{current} / {total} xp"
+  },
   "home": {
-    "start": "Comenzar aventura",
-    "comingSoon": "El mapa del mundo está en construcción."
+    "welcome": "Hola, {name}.",
+    "prompt": "$ ls -l /mundo",
+    "comingSoon": "El mapa del mundo llega en la próxima versión."
   }
 }

@@ -78,6 +78,13 @@ Implementation:
   consume tokens.
 - Each module manifest declares its `era`.
 - The era chosen as skin is stored in the save (requires a save migration).
+- Design decisions for the first eras:
+  - `terminal`: amber P3 phosphor (`#FFB000` / dim `#B87A00` on `#140D02`), VT323, double
+    borders as box drawing, the world map as a directory listing, character creation as a boot
+    sequence plus a login prompt (the only automatic animation).
+  - `chip8`: true 1-bit (`#DCEEFF` on `#0B1626`), Silkscreen, 4px block borders, dithering for
+    locked/disabled states, numbers drawn with the CHIP-8 hex font, lessons numbered in hex.
+  - Every era: lesson prose in Atkinson Hyperlegible Next, code in Atkinson Hyperlegible Mono.
 - **Phase 3** builds the theme system and fully designs the `terminal` and `chip8` eras. Each
   following era is designed (with the `frontend-design` skill) when its module arrives.
 

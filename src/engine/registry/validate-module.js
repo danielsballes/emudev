@@ -1,3 +1,5 @@
+import { ERAS } from '../eras.js';
+
 export const LESSON_TYPES = Object.freeze(['lesson', 'exercise', 'quiz', 'boss']);
 export const BADGE_CRITERIA = Object.freeze(['lesson', 'chapter', 'module']);
 
@@ -86,6 +88,7 @@ function validateStructure(manifest, errors) {
       (Array.isArray(manifest.requires) && manifest.requires.every((id) => isId(id))),
     'requires must be an array of module ids',
   );
+  check(errors, ERAS.includes(manifest.era), `era must be one of ${ERAS}`);
   check(errors, isNonEmptyString(manifest.region?.titleKey), 'region.titleKey is required');
   const chapters = manifest.chapters;
   check(errors, Array.isArray(chapters) && chapters.length > 0, 'chapters must not be empty');

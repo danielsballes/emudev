@@ -1,0 +1,62 @@
+/*
+ * Semantic design tokens. Components only use these (e.g. `bg-surface`, `text-ink`,
+ * `font-ui`); each era in src/themes/<era>/theme.css sets the `--era-*` values behind them.
+ */
+@theme inline {
+  --color-surface: var(--era-surface);
+  --color-ink: var(--era-ink);
+  --color-ink-dim: var(--era-ink-dim);
+  --color-line: var(--era-line);
+  --color-focus: var(--era-focus);
+
+  --font-ui: var(--era-font-ui);
+  --font-display: var(--era-font-display);
+  --font-prose: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --font-code: 'Atkinson Hyperlegible Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--era-surface);
+    color: var(--era-ink);
+    font-family: var(--era-font-ui);
+    font-size: var(--era-root-size, 100%);
+  }
+
+  :focus-visible {
+    outline: var(--era-border-width) solid var(--era-focus);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--era-ink);
+    color: var(--era-surface);
+  }
+}
+
+@layer utilities {
+  /* Inverse video: the classic way monochrome screens highlight without extra colors. */
+  .inverse {
+    background: var(--era-ink);
+    color: var(--era-surface);
+  }
+
+  /* Checkerboard dither: how a 1-bit display shows "half on" (locked, disabled). */
+  .dither {
+    background-image: conic-gradient(
+      var(--era-ink) 25%,
+      transparent 0 50%,
+      var(--era-ink) 0 75%,
+      transparent 0
+    );
+    background-size: calc(var(--era-pixel) * 2) calc(var(--era-pixel) * 2);
+  }
+
+  .frame {
+    border: var(--era-border-width) var(--era-border-style, solid) var(--era-line);
+  }
+
+  .glow {
+    text-shadow: var(--era-glow);
+  }
+}

@@ -38,6 +38,7 @@ describe('validateModule', () => {
       'id must be a kebab-case id',
       'order must be an integer',
       'requires must be an array of module ids',
+      'era must be one of terminal,chip8,gameboy,nes,gba,early-3d,modern',
       'region.titleKey is required',
       'chapters must not be empty',
       'badges must be an array',
