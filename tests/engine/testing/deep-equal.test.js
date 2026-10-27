@@ -30,5 +30,35 @@ describe('isDeepEqual', () => {
     expect(isDeepEqual(new Map([['a', 1]]), new Map([['b', 1]]))).toBe(false);
     expect(isDeepEqual(new Set([1, 2]), new Set([2, 1]))).toBe(true);
     expect(isDeepEqual(new Set([1]), new Set([2]))).toBe(false);
+    expect(isDeepEqual(new Set([1]), new Set([1, 2]))).toBe(false);
+  });
+
+  it('compares set members and map entries structurally, one to one', () => {
+    expect(isDeepEqual(new Set([{ address: 512 }]), new Set([{ address: 512 }]))).toBe(true);
+    expect(isDeepEqual(new Set([{ a: 1 }, { a: 1 }]), new Set([{ a: 1 }, { a: 2 }]))).toBe(false);
+    expect(isDeepEqual(new Set([1, { a: 1 }]), new Set([{ a: 1 }, 2]))).toBe(false);
+    expect(isDeepEqual(new Map([[{ id: 1 }, 'x']]), new Map([[{ id: 1 }, 'x']]))).toBe(true);
+    expect(isDeepEqual(new Map([[{ id: 1 }, 'x']]), new Map([[{ id: 1 }, 'y']]))).toBe(false);
+    expect(isDeepEqual(new Map([['k', { v: [1] }]]), new Map([['k', { v: [1] }]]))).toBe(true);
+    expect(
+      isDeepEqual(
+        new Map([['k', 1]]),
+        new Map([
+          ['k', 1],
+          ['j', 2],
+        ]),
+      ),
+    ).toBe(false);
+  });
+
+  it('compares ArrayBuffers and DataViews byte by byte', () => {
+    expect(isDeepEqual(new Uint8Array([1]).buffer, new Uint8Array([1]).buffer)).toBe(true);
+    expect(isDeepEqual(new Uint8Array([1]).buffer, new Uint8Array([2]).buffer)).toBe(false);
+    expect(isDeepEqual(new Uint8Array([1, 2]).buffer, new Uint8Array([1]).buffer)).toBe(false);
+
+    const bytes = new Uint8Array([9, 1, 2, 9]).buffer;
+    const expected = new DataView(new Uint8Array([1, 2]).buffer);
+    expect(isDeepEqual(new DataView(bytes, 1, 2), expected)).toBe(true);
+    expect(isDeepEqual(new DataView(bytes, 0, 2), expected)).toBe(false);
   });
 });

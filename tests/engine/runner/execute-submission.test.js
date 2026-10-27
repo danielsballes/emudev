@@ -72,6 +72,21 @@ describe('executeSubmission', () => {
     expect(outcome).toMatchObject({ phase: ERROR_PHASE.STUDENT, error: { message: 'boom' } });
   });
 
+  it('reports a student error even when the thrown value cannot be inspected', async () => {
+    const outcome = await executeSubmission({
+      studentSource: 'const { proxy, revoke } = Proxy.revocable({}, {}); revoke(); throw proxy;',
+      testsSource: TESTS_SOURCE,
+      importModule,
+    });
+
+    // The exact message depends on the module loader; what matters is a clean student error.
+    expect(outcome).toMatchObject({
+      status: RUN_STATUS.ERROR,
+      phase: ERROR_PHASE.STUDENT,
+      error: { message: expect.any(String) },
+    });
+  });
+
   it('blames the exercise when its tests cannot load', async () => {
     const outcome = await executeSubmission({
       studentSource: 'export const add = () => 0;',

@@ -16,15 +16,20 @@ import { createEmptySave } from '@/engine/storage/index.js';
 export const PLAYER_NAME_MAX_LENGTH = 20;
 
 /**
+ * Validation error codes for player names, usable as i18n keys by the UI.
+ */
+export const PLAYER_NAME_ERROR = Object.freeze({ EMPTY: 'empty', TOO_LONG: 'too-long' });
+
+/**
  * @param {string} name
- * @returns {'empty' | 'too-long' | null} Error code, or null when valid.
+ * @returns {string | null} A `PLAYER_NAME_ERROR` code, or null when valid.
  */
 export function validatePlayerName(name) {
   const trimmed = name.trim();
   if (trimmed.length === 0) {
-    return 'empty';
+    return PLAYER_NAME_ERROR.EMPTY;
   }
-  return trimmed.length > PLAYER_NAME_MAX_LENGTH ? 'too-long' : null;
+  return trimmed.length > PLAYER_NAME_MAX_LENGTH ? PLAYER_NAME_ERROR.TOO_LONG : null;
 }
 
 /**

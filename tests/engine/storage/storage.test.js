@@ -120,18 +120,37 @@ describe('createLocalStorageRepository', () => {
     expect(createRepository().load()).toEqual({ ...createEmptySave(), xp: 3 });
   });
 
-  it('backs up unreadable saves and starts fresh', () => {
+  it('moves unreadable saves to a backup once and starts fresh', () => {
     localStorage.setItem(KEY, '{broken');
+    const repository = createRepository();
 
-    expect(createRepository().load()).toEqual(createEmptySave());
+    expect(repository.load()).toEqual(createEmptySave());
+    expect(repository.load()).toEqual(createEmptySave());
     expect(localStorage.getItem(`${KEY}:backup:${NOW.getTime()}`)).toBe('{broken');
+    expect(localStorage.getItem(KEY)).toBeNull();
+    expect(localStorage.length).toBe(1);
   });
 
-  it('backs up saves with an invalid shape', () => {
+  it('moves saves with an invalid shape to a backup', () => {
     localStorage.setItem(KEY, envelope({ ...createEmptySave(), xp: 'lots' }));
 
     expect(createRepository().load()).toEqual(createEmptySave());
-    expect(localStorage.length).toBe(2);
+    expect(localStorage.getItem(KEY)).toBeNull();
+    expect(localStorage.length).toBe(1);
+  });
+
+  it('still loads when the backup cannot be written, keeping the original save', () => {
+    const entries = new Map([[KEY, '{broken']]);
+    const fullStorage = {
+      getItem: (name) => entries.get(name) ?? null,
+      setItem: () => {
+        throw new DOMException('Quota exceeded', 'QuotaExceededError');
+      },
+      removeItem: (name) => entries.delete(name),
+    };
+
+    expect(createRepository({ storage: fullStorage }).load()).toEqual(createEmptySave());
+    expect(entries.get(KEY)).toBe('{broken');
   });
 
   it('clears the stored save', () => {

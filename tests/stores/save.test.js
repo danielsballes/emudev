@@ -6,7 +6,12 @@ import { createFixtureModule } from '../fixtures/modules.js';
 import { createEngine, createDefaultRepository, SAVE_STORAGE_KEY } from '@/engine/plugin.js';
 import { createRegistry } from '@/engine/registry/index.js';
 
-import { PLAYER_NAME_MAX_LENGTH, useSaveStore, validatePlayerName } from '@/stores/save.js';
+import {
+  PLAYER_NAME_ERROR,
+  PLAYER_NAME_MAX_LENGTH,
+  useSaveStore,
+  validatePlayerName,
+} from '@/stores/save.js';
 
 const TEST_ROOT_COMPONENT = {};
 
@@ -34,8 +39,8 @@ describe('validatePlayerName', () => {
   it.each([
     ['Ada', null],
     ['  Ada  ', null],
-    [' '.repeat(3), 'empty'],
-    ['x'.repeat(PLAYER_NAME_MAX_LENGTH + 1), 'too-long'],
+    [' '.repeat(3), PLAYER_NAME_ERROR.EMPTY],
+    ['x'.repeat(PLAYER_NAME_MAX_LENGTH + 1), PLAYER_NAME_ERROR.TOO_LONG],
   ])('validates %j', (name, expected) => {
     expect(validatePlayerName(name)).toBe(expected);
   });

@@ -4,6 +4,8 @@ import { migrateEnvelope, SaveFormatError } from './migrate.js';
  * @typedef {object} ProgressRepository
  * Persistence boundary for the player's save. Today it is backed by `localStorage`; a future
  * `ApiRepository` will implement the same methods against the backend.
+ * Methods are synchronous for now: an asynchronous repository will require `useSaveStore` to
+ * await `save()` inside `persist()` (still writing before publishing the new state).
  * @property {() => object} load Returns the stored data, or fresh initial data.
  * @property {(data: object) => void} save
  * @property {() => void} clear
@@ -49,6 +51,18 @@ export function createLocalStorageRepository({
     return data;
   };
 
+  // Never lose a save silently: move an unreadable save aside once, then start fresh. Recovery is
+  // best effort: if the copy cannot be written (e.g. storage quota exceeded) the original entry is
+  // left untouched and loading still succeeds.
+  function quarantine(stored) {
+    try {
+      storage.setItem(`${key}:backup:${now().getTime()}`, stored);
+      storage.removeItem(key);
+    } catch {
+      // Keep the original entry for manual recovery.
+    }
+  }
+
   function save(data) {
     storage.setItem(key, JSON.stringify(toEnvelope(data)));
   }
@@ -61,8 +75,7 @@ export function createLocalStorageRepository({
     try {
       return readData(stored);
     } catch {
-      // Never lose a save silently: keep the unreadable copy aside and start fresh.
-      storage.setItem(`${key}:backup:${now().getTime()}`, stored);
+      quarantine(stored);
       return createInitialData();
     }
   }

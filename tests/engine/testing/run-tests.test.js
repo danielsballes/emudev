@@ -61,4 +61,11 @@ describe('serializeError', () => {
 
     expect(serializeError(error)).toEqual({ name: 'Error', message: '[unprintable error]' });
   });
+
+  it('never throws on revoked proxies', () => {
+    const { proxy, revoke } = Proxy.revocable({}, {});
+    revoke();
+
+    expect(serializeError(proxy)).toEqual({ name: 'Error', message: '[unprintable error]' });
+  });
 });

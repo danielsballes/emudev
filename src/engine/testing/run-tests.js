@@ -16,11 +16,12 @@ const asText = (value) => (typeof value === 'string' ? value : describeValue(val
  * @param {unknown} error
  */
 export function serializeError(error) {
-  if (error instanceof AssertionError) {
-    const { name, message, matcher, expected, actual, negated } = error;
-    return { name, message, matcher, expected, actual, negated };
-  }
+  // Even `instanceof` can throw (revoked proxies, throwing `getPrototypeOf` traps).
   try {
+    if (error instanceof AssertionError) {
+      const { name, message, matcher, expected, actual, negated } = error;
+      return { name, message, matcher, expected, actual, negated };
+    }
     return error instanceof Error
       ? { name: asText(error.name), message: asText(error.message) }
       : { name: 'Error', message: describeValue(error) };
