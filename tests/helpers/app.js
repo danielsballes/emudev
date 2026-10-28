@@ -15,15 +15,13 @@ import { useSaveStore } from '@/stores/save.js';
  */
 export function createTestApp({ modules = [createFixtureModule()] } = {}) {
   const repository = createDefaultRepository();
-  const engine = createEngine({
-    registry: createRegistry(modules),
-    repository,
-    runner: { run: () => Promise.resolve({}) },
-  });
+  // Tests can replace `runner.run` to simulate outcomes.
+  const runner = { run: () => Promise.resolve({}) };
+  const engine = createEngine({ registry: createRegistry(modules), repository, runner });
   const pinia = createPinia();
   const router = createRouter({ history: createMemoryHistory(), routes });
   router.beforeEach((to) => resolvePlayerRoute(to, useSaveStore(pinia).hasPlayer));
-  return { repository, pinia, router, plugins: [engine, pinia, router] };
+  return { repository, runner, pinia, router, plugins: [engine, pinia, router] };
 }
 
 /**

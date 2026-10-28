@@ -96,7 +96,14 @@ const chapters = computed(() => {
                 :radix="16"
               />
             </span>
-            <span>{{ lesson.title }}</span>
+            <RouterLink
+              v-if="lesson.status !== STATUS.LOCKED"
+              :to="{ name: ROUTE.LESSON, params: { moduleId: module.id, lessonId: lesson.id } }"
+              class="hover:underline"
+            >
+              {{ lesson.title }}
+            </RouterLink>
+            <span v-else>{{ lesson.title }}</span>
             <span class="sr-only">{{ statusLabels[lesson.status] }}</span>
           </li>
         </ol>

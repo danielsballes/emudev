@@ -16,6 +16,12 @@ export const routes = [
     meta: { requiresPlayer: true },
   },
   {
+    path: '/modulo/:moduleId/leccion/:lessonId',
+    name: ROUTE.LESSON,
+    component: () => import('@/views/LessonView.vue'),
+    meta: { requiresPlayer: true },
+  },
+  {
     path: '/crear-personaje',
     name: ROUTE.CREATE_CHARACTER,
     component: () => import('@/views/CharacterCreateView.vue'),
