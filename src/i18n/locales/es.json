@@ -106,6 +106,7 @@
       "expected": "Se esperaba {expected} y se obtuvo {actual}.",
       "unexpected": "No se esperaba {expected}.",
       "threw": "Lanzó un error: {message}"
-    }
+    },
+    "loadError": "No se pudo cargar la lección. Revisa tu conexión y recarga la página."
   }
 }

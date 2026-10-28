@@ -46,8 +46,8 @@ const CodeEditorStub = {
     '<textarea :aria-label="label" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
 };
 
-async function mountLesson(lessonId, { run, save } = {}) {
-  const testApp = createTestApp({ modules: [createModule()] });
+async function mountLesson(lessonId, { run, save, module = createModule() } = {}) {
+  const testApp = createTestApp({ modules: [module] });
   seedPlayer(testApp, { xp: 0, ...save });
   if (run) {
     testApp.runner.run = run;
@@ -128,6 +128,28 @@ describe('LessonView', () => {
     expect(store.isLessonCompleted('alpha', 'sum')).toBe(true);
     expect(wrapper.text()).toContain('Todos los tests pasan.');
     expect(wrapper.text()).toContain('Volver al mapa del mundo');
+  });
+
+  it('explains when the lesson content cannot be loaded', async () => {
+    const module = createModule();
+    module.chapters[0].lessons[0].content = () => Promise.reject(new Error('chunk failed'));
+    const { wrapper } = await mountLesson('intro', { module });
+
+    expect(wrapper.find('[role="alert"]').text()).toBe(
+      'No se pudo cargar la lección. Revisa tu conexión y recarga la página.',
+    );
+  });
+
+  it('saves pending code to the lesson where it was typed when navigating away', async () => {
+    const { wrapper, testApp } = await mountLesson('sum', { save: introDone });
+    const store = useSaveStore(testApp.pinia);
+
+    await wrapper.find('textarea').setValue('export const add = (a, b) => a + b;');
+    await testApp.router.push('/modulo/alpha/leccion/intro');
+    await flushPromises();
+
+    expect(store.getCode('alpha', 'sum')).toBe('export const add = (a, b) => a + b;');
+    expect(store.getCode('alpha', 'intro')).toBeUndefined();
   });
 
   it('sends the player back to the module map for locked lessons', async () => {
