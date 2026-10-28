@@ -33,7 +33,7 @@ const asciiBar = computed(
         v-for="segment in SEGMENTS"
         :key="segment"
         data-segment
-        class="frame size-[calc(var(--era-pixel)*3)]"
+        class="size-[calc(var(--era-pixel)*3)] frame"
         :class="{ 'bg-ink': segment <= filled }"
       />
     </span>

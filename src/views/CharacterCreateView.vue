@@ -70,7 +70,7 @@ function submit() {
 </script>
 
 <template>
-  <main class="crt glow min-h-screen">
+  <main class="crt min-h-screen glow">
     <div class="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-10">
       <ol aria-live="polite" class="text-ink-dim">
         <li v-for="line in bootLines.slice(0, visibleLines)" :key="line">{{ line }}</li>
@@ -98,7 +98,7 @@ function submit() {
               :aria-describedby="nameError ? 'player-name-error' : undefined"
             />
           </div>
-          <p v-if="nameError" id="player-name-error" role="alert" class="inverse self-start px-2">
+          <p v-if="nameError" id="player-name-error" role="alert" class="self-start px-2 inverse">
             {{ nameErrorMessage }}
           </p>
         </div>
@@ -109,7 +109,7 @@ function submit() {
             <label
               v-for="option in AVATARS"
               :key="option.id"
-              class="frame flex size-16 cursor-pointer items-center justify-center text-4xl has-focus-visible:outline-(length:--era-border-width) has-focus-visible:outline-offset-2 has-focus-visible:outline-focus has-focus-visible:outline-solid"
+              class="flex size-16 cursor-pointer items-center justify-center text-4xl frame has-focus-visible:outline-(length:--era-border-width) has-focus-visible:outline-offset-2 has-focus-visible:outline-focus has-focus-visible:outline-solid"
               :class="{ inverse: avatar === option.id }"
             >
               <input

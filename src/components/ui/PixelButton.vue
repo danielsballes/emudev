@@ -16,7 +16,7 @@ defineProps({
 <template>
   <button
     :type="type"
-    class="frame px-4 py-2 font-ui disabled:cursor-not-allowed"
+    class="px-4 py-2 font-ui frame disabled:cursor-not-allowed"
     :class="variant === 'primary' ? 'inverse' : 'bg-surface text-ink'"
   >
     <slot />
