@@ -18,7 +18,7 @@ const xpNeeded = computed(() => levelInfo.value.nextLevelXp - levelInfo.value.le
 </script>
 
 <template>
-  <header class="frame mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
+  <header class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2 frame">
     <p class="flex items-center gap-2">
       <span aria-hidden="true" class="glow">{{ avatarGlyph }}</span>
       <span>{{ player.name }}</span>
