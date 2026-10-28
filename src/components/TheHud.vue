@@ -2,11 +2,13 @@
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { RouterLink } from 'vue-router';
 
 import { getAvatarGlyph } from '@/components/player/avatars.js';
 import PixelNumber from '@/components/ui/PixelNumber.vue';
 import XpBar from '@/components/ui/XpBar.vue';
 import { useEra } from '@/composables/use-era.js';
+import { ROUTE } from '@/router/player-guard.js';
 import { useSaveStore } from '@/stores/save.js';
 
 const { t } = useI18n();
@@ -23,6 +25,12 @@ const xpNeeded = computed(() => levelInfo.value.nextLevelXp - levelInfo.value.le
       <span aria-hidden="true" class="glow">{{ avatarGlyph }}</span>
       <span>{{ player.name }}</span>
     </p>
+    <nav class="flex gap-4 sm:order-last sm:ml-auto">
+      <RouterLink :to="{ name: ROUTE.HOME }" class="hover:underline">{{ t('hud.map') }}</RouterLink>
+      <RouterLink :to="{ name: ROUTE.PROFILE }" class="hover:underline">
+        {{ t('hud.profile') }}
+      </RouterLink>
+    </nav>
     <p v-if="era === 'terminal'">{{ t('hud.level', { level: levelInfo.level }) }}</p>
     <p v-else class="flex items-center gap-2">
       <span>{{ t('hud.levelLabel') }}</span>
