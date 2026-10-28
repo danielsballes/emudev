@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 
@@ -38,6 +38,8 @@ const code = ref('');
 const outcome = ref(null);
 const isRunning = ref(false);
 const reward = ref(null);
+const isLoading = ref(true);
+const hasLoadError = ref(false);
 
 const isCompleted = computed(() => store.isLessonCompleted(moduleId.value, lesson.value?.id));
 const nextLesson = computed(() =>
@@ -57,22 +59,46 @@ async function load() {
   }
   outcome.value = null;
   reward.value = null;
-  const { default: source } = await lesson.value.content();
-  html.value = renderMarkdown(source);
-  exercise.value = hasExercise.value ? await lesson.value.exercise() : null;
-  code.value = store.getCode(moduleId.value, lesson.value.id) ?? exercise.value?.starter ?? '';
+  hasLoadError.value = false;
+  isLoading.value = true;
+  try {
+    const { default: source } = await lesson.value.content();
+    html.value = renderMarkdown(source);
+    exercise.value = hasExercise.value ? await lesson.value.exercise() : null;
+    code.value = store.getCode(moduleId.value, lesson.value.id) ?? exercise.value?.starter ?? '';
+  } catch {
+    // Usually a lazy chunk that failed to download (offline, or a new deploy).
+    hasLoadError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
 }
-watch(() => route.fullPath, load, { immediate: true });
 
-const pendingSave = { timer: undefined };
+// Code is saved shortly after typing stops. The target lesson is captured when typing, and any
+// pending save is written before leaving, so code never lands in another lesson.
+const pendingSave = { timer: undefined, write: undefined };
+function flushPendingSave() {
+  clearTimeout(pendingSave.timer);
+  pendingSave.write?.();
+  pendingSave.write = undefined;
+}
 function updateCode(value) {
   code.value = value;
+  const target = { moduleId: moduleId.value, lessonId: lesson.value.id };
   clearTimeout(pendingSave.timer);
-  pendingSave.timer = setTimeout(
-    () => store.saveCode(moduleId.value, lesson.value.id, value),
-    SAVE_CODE_DELAY_MS,
-  );
+  pendingSave.write = () => store.saveCode(target.moduleId, target.lessonId, value);
+  pendingSave.timer = setTimeout(flushPendingSave, SAVE_CODE_DELAY_MS);
 }
+
+watch(
+  () => route.fullPath,
+  () => {
+    flushPendingSave();
+    load();
+  },
+  { immediate: true },
+);
+onBeforeUnmount(flushPendingSave);
 
 function complete() {
   const result = store.completeLesson({ moduleId: moduleId.value, lessonId: lesson.value.id });
@@ -107,6 +133,9 @@ async function run() {
         >
           {{ t('lesson.back') }}
         </RouterLink>
+        <p v-if="hasLoadError" role="alert" class="self-start px-2 inverse">
+          {{ t('lesson.loadError') }}
+        </p>
         <!-- Content is our own Markdown rendered with raw HTML disabled (render-markdown.js). -->
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="lesson-prose" v-html="html" />
@@ -116,7 +145,11 @@ async function run() {
         </PixelButton>
       </article>
 
-      <section v-if="hasExercise" class="flex flex-col gap-4" :aria-label="t('lesson.exercise')">
+      <section
+        v-if="hasExercise && !isLoading && !hasLoadError"
+        class="flex flex-col gap-4"
+        :aria-label="t('lesson.exercise')"
+      >
         <CodeEditor
           :model-value="code"
           :label="t('lesson.editor')"
