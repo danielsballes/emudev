@@ -34,29 +34,27 @@
   }
 }
 
-@layer utilities {
-  /* Inverse video: the classic way monochrome screens highlight without extra colors. */
-  .inverse {
-    background: var(--era-ink);
-    color: var(--era-surface);
-  }
+/* Inverse video: the classic way monochrome screens highlight without extra colors. */
+@utility inverse {
+  background: var(--era-ink);
+  color: var(--era-surface);
+}
 
-  /* Checkerboard dither: how a 1-bit display shows "half on" (locked, disabled). */
-  .dither {
-    background-image: conic-gradient(
-      var(--era-ink) 25%,
-      transparent 0 50%,
-      var(--era-ink) 0 75%,
-      transparent 0
-    );
-    background-size: calc(var(--era-pixel) * 2) calc(var(--era-pixel) * 2);
-  }
+/* Checkerboard dither: how a 1-bit display shows "half on" (locked, disabled). */
+@utility dither {
+  background-image: conic-gradient(
+    var(--era-ink) 25%,
+    transparent 0 50%,
+    var(--era-ink) 0 75%,
+    transparent 0
+  );
+  background-size: calc(var(--era-pixel) * 2) calc(var(--era-pixel) * 2);
+}
 
-  .frame {
-    border: var(--era-border-width) var(--era-border-style, solid) var(--era-line);
-  }
+@utility frame {
+  border: var(--era-border-width) var(--era-border-style, solid) var(--era-line);
+}
 
-  .glow {
-    text-shadow: var(--era-glow);
-  }
+@utility glow {
+  text-shadow: var(--era-glow);
 }

@@ -33,9 +33,50 @@
     "progress": "Progreso hacia el nivel {level}",
     "xp": "{current} / {total} xp"
   },
-  "home": {
-    "welcome": "Hola, {name}.",
-    "prompt": "$ ls -l /mundo",
-    "comingSoon": "El mapa del mundo llega en la próxima versión."
+  "modules": {
+    "fundamentals": {
+      "title": "Fundamentos",
+      "chapters": {
+        "numeros": "Números en la máquina",
+        "operaciones": "Operaciones con bits",
+        "cpu": "Cómo piensa una CPU"
+      },
+      "lessons": {
+        "bits-y-bytes": "Bits y bytes",
+        "hexadecimal": "Hexadecimal",
+        "operaciones-bit-a-bit": "Operaciones bit a bit",
+        "endianness": "Endianness",
+        "ciclo-de-la-cpu": "El ciclo de la CPU"
+      }
+    },
+    "chip8": {
+      "title": "CHIP-8",
+      "chapters": {
+        "introduccion": "Introducción",
+        "memoria-y-registros": "Memoria y registros",
+        "ciclo": "El ciclo de instrucción"
+      },
+      "lessons": {
+        "que-es-un-emulador": "¿Qué es un emulador?",
+        "memoria": "La memoria de 4 KB",
+        "registros": "Registros V0–VF, I y PC",
+        "fetch": "Fetch: leer la instrucción",
+        "decode": "Decode: separar los nibbles"
+      }
+    }
+  },
+  "worldMap": {
+    "title": "Mapa del mundo",
+    "command": "$ ls -l /mundo",
+    "lessons": "{completed}/{total} lecciones",
+    "requires": "requiere: {modules}"
+  },
+  "moduleMap": {
+    "back": "cd ..",
+    "status": {
+      "done": "completada",
+      "open": "disponible",
+      "locked": "bloqueada"
+    }
   }
 }

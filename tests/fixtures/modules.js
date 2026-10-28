@@ -16,16 +16,37 @@ export function createFixtureModule(overrides = {}) {
         id: 'basics',
         titleKey: 'modules.alpha.basics',
         lessons: [
-          { id: 'intro', type: 'lesson', xp: 10, content: load },
-          { id: 'first-code', type: 'exercise', xp: 50, content: load, exercise: load },
+          { id: 'intro', titleKey: 'l.intro', type: 'lesson', xp: 10, content: load },
+          {
+            id: 'first-code',
+            titleKey: 'l.first-code',
+            type: 'exercise',
+            xp: 50,
+            content: load,
+            exercise: load,
+          },
         ],
       },
       {
         id: 'advanced',
         titleKey: 'modules.alpha.advanced',
         lessons: [
-          { id: 'quiz-time', type: 'quiz', xp: 20, content: load, quiz: load },
-          { id: 'final-boss', type: 'boss', xp: 100, content: load, exercise: load },
+          {
+            id: 'quiz-time',
+            titleKey: 'l.quiz-time',
+            type: 'quiz',
+            xp: 20,
+            content: load,
+            quiz: load,
+          },
+          {
+            id: 'final-boss',
+            titleKey: 'l.final-boss',
+            type: 'boss',
+            xp: 100,
+            content: load,
+            exercise: load,
+          },
         ],
       },
     ],
@@ -48,7 +69,9 @@ export function createSingleLessonModule(id, order, overrides = {}) {
       {
         id: 'only',
         titleKey: `modules.${id}.only`,
-        lessons: [{ id: 'only-lesson', type: 'lesson', xp: 5, content: load }],
+        lessons: [
+          { id: 'only-lesson', titleKey: 'l.only-lesson', type: 'lesson', xp: 5, content: load },
+        ],
       },
     ],
     ...overrides,

@@ -27,15 +27,20 @@ function validateLesson(lesson, path, errors) {
   check(errors, isId(lesson?.id), `${path}.id must be a kebab-case id`);
   check(errors, LESSON_TYPES.includes(lesson?.type), `${path}.type must be one of ${LESSON_TYPES}`);
   check(errors, Number.isSafeInteger(lesson?.xp) && lesson.xp >= 0, `${path}.xp must be >= 0`);
+  check(errors, isNonEmptyString(lesson?.titleKey), `${path}.titleKey is required`);
   check(errors, typeof lesson?.content === 'function', `${path}.content must be a loader function`);
-  if (hasCodeExercise(lesson ?? {})) {
+  validateLessonLoaders(lesson ?? {}, path, errors);
+}
+
+function validateLessonLoaders(lesson, path, errors) {
+  if (hasCodeExercise(lesson)) {
     check(
       errors,
       typeof lesson.exercise === 'function',
       `${path}.exercise must be a loader function`,
     );
   }
-  if (lesson?.type === 'quiz') {
+  if (lesson.type === 'quiz') {
     check(errors, typeof lesson.quiz === 'function', `${path}.quiz must be a loader function`);
   }
 }

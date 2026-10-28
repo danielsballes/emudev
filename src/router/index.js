@@ -6,7 +6,13 @@ export const routes = [
   {
     path: '/',
     name: ROUTE.HOME,
-    component: () => import('@/views/HomeView.vue'),
+    component: () => import('@/views/WorldMapView.vue'),
+    meta: { requiresPlayer: true },
+  },
+  {
+    path: '/modulo/:moduleId',
+    name: ROUTE.MODULE,
+    component: () => import('@/views/ModuleMapView.vue'),
     meta: { requiresPlayer: true },
   },
   {
