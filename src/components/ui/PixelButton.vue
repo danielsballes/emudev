@@ -5,14 +5,19 @@ defineProps({
     default: 'primary',
     validator: (value) => ['primary', 'secondary'].includes(value),
   },
+  type: {
+    type: String,
+    default: 'button',
+    validator: (value) => ['button', 'submit'].includes(value),
+  },
 });
 </script>
 
 <template>
   <button
-    type="button"
-    class="border-4 border-night px-6 py-4 font-pixel text-xs shadow-[4px_4px_0_0] shadow-night transition-transform active:translate-1 active:shadow-none"
-    :class="variant === 'primary' ? 'bg-gold text-night' : 'bg-slate text-snow'"
+    :type="type"
+    class="frame px-4 py-2 font-ui disabled:cursor-not-allowed"
+    :class="variant === 'primary' ? 'inverse' : 'bg-surface text-ink'"
   >
     <slot />
   </button>

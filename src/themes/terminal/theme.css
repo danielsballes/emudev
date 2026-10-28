@@ -1,0 +1,19 @@
+/*
+ * Era "terminal": an amber P3 phosphor text terminal. Text only, two intensities, no other color.
+ * Contrast on the surface: ink 10.5:1, dim 5.4:1 (WCAG AA).
+ */
+[data-era='terminal'] {
+  --era-surface: #140d02;
+  --era-ink: #ffb000;
+  --era-ink-dim: #b87a00;
+  --era-line: #b87a00;
+  --era-focus: #ffb000;
+  --era-font-ui: 'VT323', ui-monospace, monospace;
+  --era-font-display: 'VT323', ui-monospace, monospace;
+  --era-root-size: 137.5%;
+  /* Double borders echo box-drawing characters (═ ║). */
+  --era-border-width: 4px;
+  --era-border-style: double;
+  --era-pixel: 2px;
+  --era-glow: 0 0 6px rgb(255 176 0 / 45%);
+}

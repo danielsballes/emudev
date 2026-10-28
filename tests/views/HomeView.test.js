@@ -1,19 +1,21 @@
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
+import { createTestApp, seedPlayer } from '../helpers/app.js';
 import HomeView from '@/views/HomeView.vue';
 
 describe('HomeView', () => {
-  it('renders the app name and tagline from the Spanish locale', () => {
-    const wrapper = mount(HomeView);
-
-    expect(wrapper.find('h1').text()).toBe('EmuDev Academy');
-    expect(wrapper.text()).toContain('Aprende a construir emuladores');
+  beforeEach(() => {
+    localStorage.clear();
   });
 
-  it('shows the build version', () => {
-    const wrapper = mount(HomeView);
+  it('greets the player and shows the build version', () => {
+    const testApp = createTestApp();
+    seedPlayer(testApp);
 
+    const wrapper = mount(HomeView, { global: { plugins: testApp.plugins } });
+
+    expect(wrapper.find('h1').text()).toBe('Hola, Ada.');
     expect(wrapper.find('footer').text()).toBe('Versión dev');
   });
 });

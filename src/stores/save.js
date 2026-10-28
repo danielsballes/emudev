@@ -4,6 +4,8 @@ import { computed, shallowRef } from 'vue';
 import { useEngine } from '@/engine/plugin.js';
 import {
   completeLesson as applyLessonCompletion,
+  getShellEra,
+  getUnlockedEras,
   getLevelInfo,
   getModuleProgress as computeModuleProgress,
   isLessonCompleted as checkLessonCompleted,
@@ -50,6 +52,8 @@ export const useSaveStore = defineStore('save', () => {
   const player = computed(() => save.value.player);
   const hasPlayer = computed(() => save.value.player !== null);
   const levelInfo = computed(() => getLevelInfo(save.value.xp));
+  const unlockedEras = computed(() => getUnlockedEras(save.value, registry));
+  const shellEra = computed(() => getShellEra(save.value, registry));
 
   function createPlayer({ name, avatar }) {
     const error = validatePlayerName(name);
@@ -86,6 +90,17 @@ export const useSaveStore = defineStore('save', () => {
   const isModuleUnlocked = (moduleId) => checkModuleUnlocked(save.value, registry, moduleId);
   const getModuleProgress = (moduleId) => computeModuleProgress(save.value, registry, moduleId);
 
+  /**
+   * Chooses an unlocked era as the shell skin, or `null` to follow progress again.
+   * @param {string | null} era
+   */
+  function setSkin(era) {
+    if (era !== null && !unlockedEras.value.includes(era)) {
+      throw new RangeError(`Era ${era} is not unlocked`);
+    }
+    persist({ ...save.value, skin: era });
+  }
+
   const exportSave = () => repository.exportSave();
 
   function importSave(serialized) {
@@ -102,6 +117,9 @@ export const useSaveStore = defineStore('save', () => {
     player,
     hasPlayer,
     levelInfo,
+    unlockedEras,
+    shellEra,
+    setSkin,
     createPlayer,
     completeLesson,
     getCode,

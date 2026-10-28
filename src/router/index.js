@@ -1,14 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
+import { ROUTE } from './player-guard.js';
+
 export const routes = [
   {
     path: '/',
-    name: 'home',
+    name: ROUTE.HOME,
     component: () => import('@/views/HomeView.vue'),
+    meta: { requiresPlayer: true },
+  },
+  {
+    path: '/crear-personaje',
+    name: ROUTE.CREATE_CHARACTER,
+    component: () => import('@/views/CharacterCreateView.vue'),
+    meta: { guestOnly: true, hideHud: true },
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: { name: 'home' },
+    redirect: { name: ROUTE.HOME },
   },
 ];
 

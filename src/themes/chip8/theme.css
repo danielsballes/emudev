@@ -1,0 +1,26 @@
+/*
+ * Era "chip8": a real 1-bit display. Cold phosphor white on a TV-tube blue, nothing in between;
+ * "half on" states use dithering instead of opacity. Contrast: 15.3:1 (WCAG AAA).
+ */
+[data-era='chip8'] {
+  --era-surface: #0b1626;
+  --era-ink: #dceeff;
+  --era-ink-dim: #dceeff;
+  --era-line: #dceeff;
+  --era-focus: #dceeff;
+  --era-font-ui: 'Silkscreen', ui-monospace, monospace;
+  --era-font-display: 'Silkscreen', ui-monospace, monospace;
+  --era-root-size: 100%;
+  --era-border-width: 4px;
+  --era-pixel: 4px;
+  --era-glow: none;
+}
+
+/* Static scanlines, subtle enough to keep text readable. */
+[data-era='chip8'] .crt {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 3px,
+    rgb(0 0 0 / 18%) 3px 4px
+  );
+}

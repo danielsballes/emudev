@@ -1,31 +1,4 @@
 @import 'tailwindcss';
-
-/* Palette based on Sweetie 16 by GrafxKid. */
-@theme {
-  --color-night: #1a1c2c;
-  --color-plum: #5d275d;
-  --color-ember: #b13e53;
-  --color-sunset: #ef7d57;
-  --color-gold: #ffcd75;
-  --color-lime: #a7f070;
-  --color-grass: #38b764;
-  --color-teal: #257179;
-  --color-navy: #29366f;
-  --color-ocean: #3b5dc9;
-  --color-sky: #41a6f6;
-  --color-ice: #73eff7;
-  --color-snow: #f4f4f4;
-  --color-mist: #94b0c2;
-  --color-slate: #566c86;
-  --color-shadow: #333c57;
-
-  --font-pixel: 'Press Start 2P', monospace;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-}
-
-@layer base {
-  html {
-    font-family: var(--font-mono);
-    image-rendering: pixelated;
-  }
-}
+@import '../themes/tokens.css';
+@import '../themes/terminal/theme.css';
+@import '../themes/chip8/theme.css';

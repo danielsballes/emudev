@@ -147,6 +147,25 @@ describe('useSaveStore', () => {
     expect(repository.load().xp).toBe(10);
   });
 
+  it('exposes unlocked eras and the shell era', () => {
+    const { store } = setup();
+
+    expect(store.unlockedEras).toEqual(['terminal', 'chip8']);
+    expect(store.shellEra).toBe('chip8');
+  });
+
+  it('switches the shell skin among unlocked eras and persists it', () => {
+    const { store, repository } = setup();
+
+    store.setSkin('terminal');
+    expect(store.shellEra).toBe('terminal');
+    expect(repository.load().skin).toBe('terminal');
+
+    store.setSkin(null);
+    expect(store.shellEra).toBe('chip8');
+    expect(() => store.setSkin('nes')).toThrow(RangeError);
+  });
+
   it('loads an existing save on creation', () => {
     setup().store.createPlayer({ name: 'Ada', avatar: 'wizard' });
 

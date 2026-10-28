@@ -84,8 +84,19 @@ src/
 └─ modules/<id>/  # one module per emulated system
 ```
 
-Current state: bootstrap + engine. There is no game UI or module yet. See the phases in
-PLAN.md.
+Current state: bootstrap + engine + theme system, HUD and character creation (phase 3a). No
+module exists yet. See the phases in PLAN.md.
+
+Themes:
+
+- `src/themes/tokens.css` maps semantic Tailwind tokens (`bg-surface`, `text-ink`, `text-ink-dim`,
+  `border-line`, `font-ui`, `font-display`, `font-prose`, `font-code`) and utilities (`frame`,
+  `inverse`, `dither`, `glow`) to `--era-*` variables; `src/themes/<era>/theme.css` sets them.
+- The shell era comes from `useSaveStore().shellEra`, is applied as `data-era` on `<html>` and
+  provided to components through `provideEra`/`useEra` (`src/composables/use-era.js`). A module
+  view will wrap its content in its own `data-era` container and call `provideEra`.
+- Status is never color-only: use glyphs, inverse video or dithering (1-bit eras have no other
+  colors).
 
 Engine pieces:
 

@@ -9,6 +9,7 @@ export function createFixtureModule(overrides = {}) {
   return {
     id: 'alpha',
     order: 1,
+    era: 'chip8',
     region: { titleKey: 'modules.alpha.title' },
     chapters: [
       {
@@ -41,6 +42,7 @@ export function createSingleLessonModule(id, order, overrides = {}) {
   return {
     id,
     order,
+    era: 'terminal',
     region: { titleKey: `modules.${id}.title` },
     chapters: [
       {
