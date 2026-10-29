@@ -4,14 +4,20 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createFixtureModule, createSingleLessonModule } from '../fixtures/modules.js';
 import { createTestApp, seedPlayer } from '../helpers/app.js';
 import EraUnlockedOverlay from '@/components/EraUnlockedOverlay.vue';
+import { SaveFormatError } from '@/engine/storage/index.js';
 import { useSaveStore } from '@/stores/save.js';
 import ProfileView from '@/views/ProfileView.vue';
 
 const modules = [createSingleLessonModule('zero', 0), createFixtureModule({ requires: ['zero'] })];
+// Completing `zero` unlocks two eras at once: chip8 (alpha) and gameboy (beta).
+const twoEraModules = [
+  ...modules,
+  createSingleLessonModule('beta', 2, { era: 'gameboy', requires: ['zero'] }),
+];
 const zeroDone = { lessons: { 'zero/only-lesson': { completedAt: 'x', xpAwarded: 5 } } };
 
-function setup(save) {
-  const testApp = createTestApp({ modules });
+function setup(save, appModules = modules) {
+  const testApp = createTestApp({ modules: appModules });
   seedPlayer(testApp, save);
   return testApp;
 }
@@ -88,6 +94,21 @@ describe('ProfileView', () => {
     );
   });
 
+  it('shows a generic message for unexpected import errors', async () => {
+    const testApp = setup();
+    testApp.repository.importSave = () => {
+      throw new SaveFormatError('something-new', 'unexpected');
+    };
+    const wrapper = mount(ProfileView, { global: { plugins: testApp.plugins } });
+
+    await selectFile(wrapper.find('input[type="file"]'), '{}');
+    await flushPromises();
+
+    expect(wrapper.find('[role="status"]').text()).toBe(
+      'No se pudo importar la partida. Comprueba el archivo e inténtalo de nuevo.',
+    );
+  });
+
   it('ignores an empty file selection', async () => {
     const wrapper = mount(ProfileView, { global: { plugins: setup().plugins } });
     const input = wrapper.find('input[type="file"]');
@@ -124,6 +145,40 @@ describe('EraUnlockedOverlay', () => {
     await wrapper.find('button').trigger('click');
     expect(wrapper.find('[role="alertdialog"]').exists()).toBe(false);
     wrapper.unmount();
+  });
+
+  it('announces several unlocked eras one at a time, oldest first', async () => {
+    const testApp = setup(undefined, twoEraModules);
+    const wrapper = mount(EraUnlockedOverlay, { global: { plugins: testApp.plugins } });
+    const store = useSaveStore(testApp.pinia);
+
+    const result = store.completeLesson({ moduleId: 'zero', lessonId: 'only-lesson' });
+    await flushPromises();
+
+    expect(result.newEras).toEqual(['chip8', 'gameboy']);
+    expect(wrapper.find('[role="alertdialog"]').text()).toContain('CHIP-8');
+
+    await wrapper.find('button').trigger('click');
+    expect(wrapper.find('[role="alertdialog"]').text()).toContain('Game Boy');
+
+    await wrapper.find('button').trigger('click');
+    expect(wrapper.find('[role="alertdialog"]').exists()).toBe(false);
+  });
+
+  it('forgets pending announcements when the save is imported or reset', () => {
+    const testApp = setup(undefined, twoEraModules);
+    mount(EraUnlockedOverlay, { global: { plugins: testApp.plugins } });
+    const store = useSaveStore(testApp.pinia);
+    const backup = store.exportSave();
+
+    store.completeLesson({ moduleId: 'zero', lessonId: 'only-lesson' });
+    expect(store.pendingEras).toHaveLength(2);
+    store.importSave(backup);
+    expect(store.pendingEras).toEqual([]);
+
+    store.completeLesson({ moduleId: 'zero', lessonId: 'only-lesson' });
+    store.resetSave();
+    expect(store.pendingEras).toEqual([]);
   });
 
   it('does not announce anything when no era is unlocked', () => {

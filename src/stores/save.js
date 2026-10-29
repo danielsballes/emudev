@@ -81,8 +81,9 @@ export const useSaveStore = defineStore('save', () => {
     return { ...result, newEras };
   }
 
-  function acknowledgeEras() {
-    pendingEras.value = [];
+  // Announcements are shown one at a time, oldest first.
+  function acknowledgeNextEra() {
+    pendingEras.value = pendingEras.value.slice(1);
   }
 
   const getCode = (moduleId, lessonId) => save.value.code[progressKey(moduleId, lessonId)];
@@ -116,11 +117,13 @@ export const useSaveStore = defineStore('save', () => {
 
   function importSave(serialized) {
     save.value = repository.importSave(serialized);
+    pendingEras.value = [];
   }
 
   function resetSave() {
     repository.clear();
     save.value = createEmptySave();
+    pendingEras.value = [];
   }
 
   return {
@@ -134,7 +137,7 @@ export const useSaveStore = defineStore('save', () => {
     createPlayer,
     completeLesson,
     pendingEras,
-    acknowledgeEras,
+    acknowledgeNextEra,
     getCode,
     saveCode,
     isLessonCompleted,

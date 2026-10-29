@@ -142,7 +142,8 @@
     "importErrors": {
       "invalid-json": "El archivo no es una partida válida (JSON incorrecto).",
       "invalid-format": "El archivo no tiene el formato de una partida.",
-      "unsupported-version": "La partida es de una versión más nueva de la plataforma."
+      "unsupported-version": "La partida es de una versión más nueva de la plataforma.",
+      "unknown": "No se pudo importar la partida. Comprueba el archivo e inténtalo de nuevo."
     }
   }
 }

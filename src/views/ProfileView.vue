@@ -22,6 +22,7 @@ const importErrors = computed(() => ({
   'invalid-format': t('profile.importErrors.invalid-format'),
   'unsupported-version': t('profile.importErrors.unsupported-version'),
 }));
+const unknownImportError = computed(() => t('profile.importErrors.unknown'));
 
 const badgeStatus = computed(() => ({
   earned: t('profile.badgeEarned'),
@@ -66,7 +67,7 @@ async function importSave(event) {
     if (!(error instanceof SaveFormatError)) {
       throw error;
     }
-    importMessage.value = importErrors.value[error.code];
+    importMessage.value = importErrors.value[error.code] ?? unknownImportError.value;
   } finally {
     event.target.value = '';
   }

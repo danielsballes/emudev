@@ -13,7 +13,7 @@ const store = useSaveStore();
 const { pendingEras } = storeToRefs(store);
 
 const eraNames = useEraNames();
-const era = computed(() => pendingEras.value.at(-1));
+const era = computed(() => pendingEras.value[0]);
 const dialog = ref(null);
 
 // The overlay is drawn in the new era, so the "reboot" shows the next generation right away.
@@ -41,7 +41,7 @@ watch(era, async (value) => {
       {{ t('eraUnlocked.title', { era: eraNames[era] }) }}
     </h2>
     <p class="max-w-prose">{{ t('eraUnlocked.body') }}</p>
-    <PixelButton @click="store.acknowledgeEras()">{{ t('eraUnlocked.continue') }}</PixelButton>
+    <PixelButton @click="store.acknowledgeNextEra()">{{ t('eraUnlocked.continue') }}</PixelButton>
   </div>
 </template>
 
