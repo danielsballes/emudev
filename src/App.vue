@@ -2,6 +2,7 @@
 import { computed, watchEffect } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
 
+import EraUnlockedOverlay from '@/components/EraUnlockedOverlay.vue';
 import TheHud from '@/components/TheHud.vue';
 import { provideEra } from '@/composables/use-era.js';
 import { useSaveStore } from '@/stores/save.js';
@@ -24,5 +25,6 @@ const showHud = computed(() => store.hasPlayer && !route.meta.hideHud);
       <TheHud />
     </div>
     <RouterView />
+    <EraUnlockedOverlay />
   </div>
 </template>

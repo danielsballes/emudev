@@ -28,6 +28,12 @@ export const routes = [
     meta: { guestOnly: true, hideHud: true },
   },
   {
+    path: '/perfil',
+    name: ROUTE.PROFILE,
+    component: () => import('@/views/ProfileView.vue'),
+    meta: { requiresPlayer: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: { name: ROUTE.HOME },
   },

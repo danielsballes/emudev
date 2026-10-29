@@ -31,7 +31,9 @@
     "level": "nivel {level}",
     "levelLabel": "nivel",
     "progress": "Progreso hacia el nivel {level}",
-    "xp": "{current} / {total} xp"
+    "xp": "{current} / {total} xp",
+    "map": "mapa",
+    "profile": "perfil"
   },
   "modules": {
     "fundamentals": {
@@ -123,5 +125,40 @@
       "threw": "Lanzó un error: {message}"
     },
     "loadError": "No se pudo cargar la lección. Revisa tu conexión y recarga la página."
+  },
+  "eras": {
+    "terminal": "Terminal",
+    "chip8": "CHIP-8",
+    "gameboy": "Game Boy",
+    "nes": "NES",
+    "gba": "GBA",
+    "early-3d": "Primer 3D",
+    "modern": "Moderna"
+  },
+  "eraUnlocked": {
+    "title": "Nueva era desbloqueada: {era}",
+    "body": "La interfaz evoluciona contigo. Puedes volver a eras anteriores desde tu perfil.",
+    "continue": "Continuar"
+  },
+  "profile": {
+    "title": "Perfil",
+    "stats": "Nivel {level}, {xp} xp en total",
+    "badges": "Insignias",
+    "badgeEarned": "conseguida",
+    "badgeLocked": "pendiente",
+    "noBadges": "Completa lecciones para ganar insignias.",
+    "skin": "Apariencia",
+    "skinAuto": "Automática (la era más avanzada)",
+    "save": "Partida",
+    "saveHelp": "Tu progreso se guarda en este navegador. Exporta una copia para no perderlo.",
+    "export": "Exportar partida",
+    "import": "Importar partida",
+    "imported": "Partida importada.",
+    "importErrors": {
+      "invalid-json": "El archivo no es una partida válida (JSON incorrecto).",
+      "invalid-format": "El archivo no tiene el formato de una partida.",
+      "unsupported-version": "La partida es de una versión más nueva de la plataforma.",
+      "unknown": "No se pudo importar la partida. Comprueba el archivo e inténtalo de nuevo."
+    }
   }
 }
