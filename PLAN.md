@@ -23,12 +23,21 @@ Each phase is one or more independent PRs. Engine, UI and content are never mixe
   - [ ] 3d: profile, skin selection, save export/import, era unlock scene (branch
         `feat/profile`).
   - [ ] Storage on IndexedDB instead of localStorage (async repository, one-time migration of
-        existing saves). Export/import stays as the backup until accounts exist.
+        existing saves). Deferred until module 0 (Fundamentals) is ready. Export/import stays as
+        the backup until accounts exist.
 - [ ] **Phase 4: CHIP-8 core + Sandbox.**
-  - [ ] 4a: reference interpreter core (`src/modules/chip8/core`): 35 instructions, configurable
+  - [x] 4a: reference interpreter core (`src/modules/chip8/core`): 35 instructions, configurable
         COSMAC/SCHIP quirks, tests per opcode.
-  - [ ] 4b: sandbox with a debugger (registers, memory, step by step) and ROM loading. Needs a
-        test ROM with a compatible license (e.g. the IBM logo).
+  - [x] 4b: reusable pieces for lessons, with no standalone page: `Chip8Screen`, `HexKeypad`,
+        `MachineDebugger` (registers, pointers, stack, disassembly of the next instructions),
+        the sandbox runner and `useSandbox`, a disassembler, and the Timendus test ROMs
+        (GPL-3.0, see `public/roms/chip8/LICENSES.md`) run against the core in tests.
+  - [ ] Sandbox page: a "console" unlocked as a reward after the IBM logo lesson, running the
+        student's own emulator (phase 5). It was built and deliberately left out: on its own it
+        only ran our reference core.
+  - [ ] 4c: `displayWait` quirk (DXYN waits for the next 60 Hz tick on the COSMAC VIP). The
+        Timendus quirks ROM reports `DISP.WAIT` as failing until it exists. Also a speed
+        control for the sandbox.
 - [ ] **Phase 5: CHIP-8 content.** Chapters 1–7 (up to the IBM logo), then 8–14. Exercises need
       the lesson view (3c).
 - [ ] **Phase 6: Module 0, Fundamentals.**

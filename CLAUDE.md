@@ -84,8 +84,9 @@ src/
 └─ modules/<id>/  # one module per emulated system
 ```
 
-Current state: bootstrap + engine + theme system, HUD and character creation (phase 3a). No
-module exists yet. See the phases in PLAN.md.
+Current state: bootstrap, engine, theme system, world and module maps, lesson view, the CHIP-8
+interpreter core and the debugger pieces for it. Lessons are placeholders until the content phases. See the
+phases in PLAN.md.
 
 Themes:
 

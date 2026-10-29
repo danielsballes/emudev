@@ -64,6 +64,21 @@
         "registros": "Registros V0–VF, I y PC",
         "fetch": "Fetch: leer la instrucción",
         "decode": "Decode: separar los nibbles"
+      },
+      "sandbox": {
+        "registers": "Registros",
+        "pointers": "Punteros y timers",
+        "stack": "Pila: {items}",
+        "empty": "vacía",
+        "next": "Siguientes instrucciones",
+        "roms": {
+          "chip8-logo": "Logo de CHIP-8",
+          "ibm-logo": "Logo de IBM",
+          "corax": "Corax+ (opcodes)",
+          "flags": "Flags",
+          "quirks": "Quirks",
+          "keypad": "Teclado"
+        }
       }
     }
   },
