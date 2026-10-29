@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, shallowRef } from 'vue';
+import { computed, ref, shallowRef } from 'vue';
 
 import { useEngine } from '@/engine/plugin.js';
 import {
@@ -66,12 +66,24 @@ export const useSaveStore = defineStore('save', () => {
     });
   }
 
+  // Eras unlocked by the last completion, waiting to be announced by the UI.
+  const pendingEras = ref([]);
+
   function completeLesson({ moduleId, lessonId }) {
     const result = applyLessonCompletion(save.value, registry, { moduleId, lessonId });
-    if (!result.isAlreadyCompleted) {
-      persist(result.save);
+    if (result.isAlreadyCompleted) {
+      return { ...result, newEras: [] };
     }
-    return result;
+    const erasBefore = unlockedEras.value;
+    persist(result.save);
+    const newEras = unlockedEras.value.filter((era) => !erasBefore.includes(era));
+    pendingEras.value = [...pendingEras.value, ...newEras];
+    return { ...result, newEras };
+  }
+
+  // Announcements are shown one at a time, oldest first.
+  function acknowledgeNextEra() {
+    pendingEras.value = pendingEras.value.slice(1);
   }
 
   const getCode = (moduleId, lessonId) => save.value.code[progressKey(moduleId, lessonId)];
@@ -105,11 +117,13 @@ export const useSaveStore = defineStore('save', () => {
 
   function importSave(serialized) {
     save.value = repository.importSave(serialized);
+    pendingEras.value = [];
   }
 
   function resetSave() {
     repository.clear();
     save.value = createEmptySave();
+    pendingEras.value = [];
   }
 
   return {
@@ -122,6 +136,8 @@ export const useSaveStore = defineStore('save', () => {
     setSkin,
     createPlayer,
     completeLesson,
+    pendingEras,
+    acknowledgeNextEra,
     getCode,
     saveCode,
     isLessonCompleted,

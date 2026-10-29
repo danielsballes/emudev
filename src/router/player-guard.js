@@ -3,6 +3,7 @@ export const ROUTE = Object.freeze({
   CREATE_CHARACTER: 'create-character',
   MODULE: 'module',
   LESSON: 'lesson',
+  PROFILE: 'profile',
 });
 
 /**
