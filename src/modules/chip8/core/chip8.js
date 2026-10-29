@@ -63,6 +63,7 @@ export function createChip8({ quirks = QUIRKS.cosmac, random = randomByte } = {}
    */
   function step() {
     const { state } = machine;
+    state.drawn = false;
     const opcode = (state.memory[state.pc] << 8) | state.memory[state.pc + 1];
     state.pc = (state.pc + 2) & 0xf_ff;
     const ins = decode(opcode);
