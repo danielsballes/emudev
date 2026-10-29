@@ -103,6 +103,11 @@ describe('flow control', () => {
     expect(returned).toMatchObject({ pc: 0x2_02, sp: 0 });
   });
 
+  it('tells where the stack error happened', () => {
+    expect(() => run([0x00_e0, 0x00_ee])).toThrow('Return with an empty stack at 0x0202');
+    expect(() => run([0x22_00], { steps: 17 })).toThrow('Too many nested calls at 0x0200');
+  });
+
   it('reports stack underflow and overflow', () => {
     expect(() => run([0x00_ee])).toThrow(expect.objectContaining({ code: 'stack-underflow' }));
     expect(() => run([0x22_00], { steps: 17 })).toThrow(
@@ -186,6 +191,14 @@ describe('display', () => {
     const second = run([0xa0_50, 0x60_01, 0x61_02, 0xd0_15, 0xd0_15]);
     expect(pixel(second, 1, 2)).toBe(0);
     expect(second.v[0xf]).toBe(1);
+  });
+
+  it('flags only the instruction that drew', () => {
+    const drew = run([0xa0_50, 0xd0_15]);
+    expect(drew.drawn).toBe(true);
+
+    const idle = run([0xa0_50, 0xd0_15, 0x60_01]);
+    expect(idle.drawn).toBe(false);
   });
 
   it('wraps the start position and clips at the edges', () => {

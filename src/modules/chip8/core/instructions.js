@@ -42,7 +42,7 @@ function system(machine, ins) {
     return;
   }
   if (state.sp === 0) {
-    throw new Chip8Error('stack-underflow', 'Return with an empty stack');
+    throw new Chip8Error('stack-underflow', `Return with an empty stack at ${hex(state.pc - 2)}`);
   }
   state.sp -= 1;
   state.pc = state.stack[state.sp];
@@ -51,7 +51,7 @@ function system(machine, ins) {
 function call(machine, ins) {
   const { state } = machine;
   if (state.sp === STACK_SIZE) {
-    throw new Chip8Error('stack-overflow', 'Too many nested calls');
+    throw new Chip8Error('stack-overflow', `Too many nested calls at ${hex(state.pc - 2)}`);
   }
   state.stack[state.sp] = state.pc;
   state.sp += 1;
