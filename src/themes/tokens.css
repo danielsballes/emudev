@@ -58,3 +58,51 @@
 @utility glow {
   text-shadow: var(--era-glow);
 }
+
+/* Lesson text: the readable base shared by every era (see PLAN.md, "Readability first"). */
+@utility lesson-prose {
+  font-family: var(--font-prose);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 70ch;
+
+  & h1,
+  & h2,
+  & h3 {
+    font-family: var(--era-font-display);
+    line-height: 1.2;
+    margin-block: 1.2em 0.5em;
+  }
+
+  & h1 {
+    font-size: 1.75em;
+    margin-top: 0;
+  }
+
+  & p,
+  & ul,
+  & ol,
+  & pre {
+    margin-block: 0.8em;
+  }
+
+  & ul,
+  & ol {
+    padding-left: 1.5em;
+    list-style: revert;
+  }
+
+  & code {
+    font-family: var(--font-code);
+  }
+
+  & pre {
+    border: var(--era-border-width) var(--era-border-style, solid) var(--era-line);
+    padding: 1em;
+    overflow-x: auto;
+  }
+
+  & a {
+    text-decoration: underline;
+  }
+}
