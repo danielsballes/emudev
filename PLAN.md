@@ -15,11 +15,22 @@ Each phase is one or more independent PRs. Engine, UI and content are never mixe
 - [x] **Phase 2: Engine.** Module registry, versioned storage, Web Worker runner, test
       mini-library, progression (XP, levels, badges, unlocks), `createEngine` plugin and
       `useSaveStore` Pinia store.
-- [ ] **Phase 3: RPG shell.** Character creation, HUD, world map, module map, lesson view
-      (content + CodeMirror editor + test results), profile, save export/import.
-- [ ] **Phase 4: CHIP-8 core + Sandbox.** Reference emulator with tests per opcode; sandbox with a
-      debugger (registers, memory, step by step) and ROM loading.
-- [ ] **Phase 5: CHIP-8 content.** Chapters 1–7 (up to the IBM logo), then 8–14.
+- [ ] **Phase 3: RPG shell.**
+  - [x] 3a: era theme system (`terminal`, `chip8`), HUD, character creation (#4).
+  - [x] 3b: world map, module map, `fundamentals` and `chip8` modules with placeholder lessons
+        (#5).
+  - [x] 3c: lesson view with CodeMirror editor, runner results and rewards (#6).
+  - [ ] 3d: profile, skin selection, save export/import, era unlock scene (branch
+        `feat/profile`).
+  - [ ] Storage on IndexedDB instead of localStorage (async repository, one-time migration of
+        existing saves). Export/import stays as the backup until accounts exist.
+- [ ] **Phase 4: CHIP-8 core + Sandbox.**
+  - [ ] 4a: reference interpreter core (`src/modules/chip8/core`): 35 instructions, configurable
+        COSMAC/SCHIP quirks, tests per opcode.
+  - [ ] 4b: sandbox with a debugger (registers, memory, step by step) and ROM loading. Needs a
+        test ROM with a compatible license (e.g. the IBM logo).
+- [ ] **Phase 5: CHIP-8 content.** Chapters 1–7 (up to the IBM logo), then 8–14. Exercises need
+      the lesson view (3c).
 - [ ] **Phase 6: Module 0, Fundamentals.**
 - [ ] **Phase 7+: Next modules** following the roadmap.
 - [ ] **Backend** (see below), once user accounts or sync are needed.
