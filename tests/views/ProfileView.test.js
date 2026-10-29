@@ -109,6 +109,19 @@ describe('ProfileView', () => {
     );
   });
 
+  it('shows the generic message when the import fails for any other reason', async () => {
+    const testApp = setup();
+    testApp.repository.importSave = () => {
+      throw new DOMException('Quota exceeded', 'QuotaExceededError');
+    };
+    const wrapper = mount(ProfileView, { global: { plugins: testApp.plugins } });
+
+    await selectFile(wrapper.find('input[type="file"]'), '{}');
+    await flushPromises();
+
+    expect(wrapper.find('[role="status"]').text()).toContain('No se pudo importar la partida');
+  });
+
   it('ignores an empty file selection', async () => {
     const wrapper = mount(ProfileView, { global: { plugins: setup().plugins } });
     const input = wrapper.find('input[type="file"]');

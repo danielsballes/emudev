@@ -64,10 +64,9 @@ async function importSave(event) {
     store.importSave(await file.text());
     importMessage.value = t('profile.imported');
   } catch (error) {
-    if (!(error instanceof SaveFormatError)) {
-      throw error;
-    }
-    importMessage.value = importErrors.value[error.code] ?? unknownImportError.value;
+    // Any failure (invalid file, unreadable file, storage error) must end in a visible message.
+    const known = error instanceof SaveFormatError ? importErrors.value[error.code] : undefined;
+    importMessage.value = known ?? unknownImportError.value;
   } finally {
     event.target.value = '';
   }
